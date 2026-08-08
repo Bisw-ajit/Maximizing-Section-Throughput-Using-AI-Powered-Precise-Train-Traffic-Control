@@ -1,0 +1,13 @@
+railoptix.db
+.env
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+node_modules/
+dist/
+.DS_Store
+*.egg-info/
+.pytest_cache/

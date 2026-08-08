@@ -1,0 +1,145 @@
+{
+  "network_id": "railoptix_main",
+  "name": "RAILOPTIX Main Network",
+  "description": "Cuttack–Bhubaneswar–Khurda Road–Puri and Khurda Road–Khallikote–Brahmapur railway network in Odisha, India.",
+  "nodes": [
+    {
+      "node_id": "CTK",
+      "name": "Cuttack",
+      "node_type": "STATION",
+      "latitude": 20.4625,
+      "longitude": 85.8828,
+      "platform_count": 4,
+      "is_junction": false
+    },
+    {
+      "node_id": "BBS",
+      "name": "Bhubaneswar",
+      "node_type": "STATION",
+      "latitude": 20.2961,
+      "longitude": 85.8245,
+      "platform_count": 6,
+      "is_junction": false
+    },
+    {
+      "node_id": "KUR",
+      "name": "Khurda Road Junction",
+      "node_type": "JUNCTION",
+      "latitude": 20.1736,
+      "longitude": 85.6177,
+      "platform_count": 4,
+      "is_junction": true
+    },
+    {
+      "node_id": "PURI",
+      "name": "Puri",
+      "node_type": "STATION",
+      "latitude": 19.8135,
+      "longitude": 85.8312,
+      "platform_count": 8,
+      "is_junction": false
+    },
+    {
+      "node_id": "KLK",
+      "name": "Khallikote",
+      "node_type": "STATION",
+      "latitude": 19.6069,
+      "longitude": 85.0939,
+      "platform_count": 2,
+      "is_junction": false
+    },
+    {
+      "node_id": "BAM",
+      "name": "Brahmapur",
+      "node_type": "STATION",
+      "latitude": 19.3149,
+      "longitude": 84.7941,
+      "platform_count": 4,
+      "is_junction": false
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "CTK-BBS",
+      "from_node": "CTK",
+      "to_node": "BBS",
+      "length_km": 28.0,
+      "capacity": 2,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "DOUBLE"
+    },
+    {
+      "section_id": "BBS-KUR",
+      "from_node": "BBS",
+      "to_node": "KUR",
+      "length_km": 20.0,
+      "capacity": 2,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "DOUBLE"
+    },
+    {
+      "section_id": "KUR-PURI",
+      "from_node": "KUR",
+      "to_node": "PURI",
+      "length_km": 45.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    },
+    {
+      "section_id": "KUR-KLK",
+      "from_node": "KUR",
+      "to_node": "KLK",
+      "length_km": 65.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    },
+    {
+      "section_id": "KLK-BAM",
+      "from_node": "KLK",
+      "to_node": "BAM",
+      "length_km": 35.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    }
+  ],
+  "routes": [
+    {
+      "route_id": "route_A",
+      "name": "Cuttack → Puri (via Khurda Road)",
+      "direction": "SOUTHBOUND",
+      "node_sequence": ["CTK", "BBS", "KUR", "PURI"]
+    },
+    {
+      "route_id": "route_B",
+      "name": "Cuttack → Brahmapur (via Khurda Road)",
+      "direction": "SOUTHBOUND",
+      "node_sequence": ["CTK", "BBS", "KUR", "KLK", "BAM"]
+    },
+    {
+      "route_id": "route_C",
+      "name": "Puri → Cuttack (via Khurda Road)",
+      "direction": "NORTHBOUND",
+      "node_sequence": ["PURI", "KUR", "BBS", "CTK"]
+    },
+    {
+      "route_id": "route_D",
+      "name": "Brahmapur → Cuttack (via Khurda Road)",
+      "direction": "NORTHBOUND",
+      "node_sequence": ["BAM", "KLK", "KUR", "BBS", "CTK"]
+    },
+    {
+      "route_id": "route_E",
+      "name": "Khurda Road → Puri (local)",
+      "direction": "SOUTHBOUND",
+      "node_sequence": ["KUR", "PURI"]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "scenario_id": "scenario_002",
+  "name": "Baseline — No Conflict",
+  "description": "Well-spaced train schedule with 30+ minute gaps between trains at all critical sections. Used as the baseline comparison run against the AI-assisted strategy.",
+  "network_id": "railoptix_main",
+  "difficulty": "LOW",
+  "trains": [
+    {
+      "train_id": "B001",
+      "train_number": "12837",
+      "name": "Puri Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:00",
+      "avg_speed_kmh": 75,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BBS": 4,
+        "KUR": 3,
+        "PURI": 0
+      }
+    },
+    {
+      "train_id": "B002",
+      "train_number": "12801",
+      "name": "Purushottam Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_B",
+      "scheduled_departure": "07:00",
+      "avg_speed_kmh": 70,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BBS": 3,
+        "KUR": 5,
+        "KLK": 3,
+        "BAM": 0
+      }
+    },
+    {
+      "train_id": "B003",
+      "train_number": "22812",
+      "name": "New Delhi Rajdhani Express",
+      "priority": 1,
+      "initial_node": "BAM",
+      "route_id": "route_D",
+      "scheduled_departure": "04:00",
+      "avg_speed_kmh": 90,
+      "dwell_time_minutes": {
+        "BAM": 0,
+        "KLK": 2,
+        "KUR": 4,
+        "BBS": 5,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "B004",
+      "train_number": "18406",
+      "name": "Santragachi-Puri Express",
+      "priority": 3,
+      "initial_node": "PURI",
+      "route_id": "route_C",
+      "scheduled_departure": "09:00",
+      "avg_speed_kmh": 65,
+      "dwell_time_minutes": {
+        "PURI": 0,
+        "KUR": 3,
+        "BBS": 4,
+        "CTK": 0
+      }
+    }
+  ],
+  "constraints": {
+    "min_headway_minutes": 5,
+    "max_hold_minutes": 15,
+    "junction_clearance_minutes": 3,
+    "single_line_clearance_minutes": 5,
+    "priority_override_allowed": true
+  },
+  "expected_conflicts": []
+}

@@ -1,0 +1,112 @@
+{
+  "scenario_id": "scenario_001",
+  "name": "Khurda Road Junction Conflict",
+  "description": "Two high-priority trains converging on Khurda Road from opposite directions create a crossing conflict on the single-line KUR-PURI section. The Rajdhani from Brahmapur and the Puri Express from Cuttack will arrive at Khurda Road within minutes of each other.",
+  "network_id": "railoptix_main",
+  "difficulty": "HIGH",
+  "trains": [
+    {
+      "train_id": "T001",
+      "train_number": "12837",
+      "name": "Puri Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:00",
+      "avg_speed_kmh": 75,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BBS": 4,
+        "KUR": 3,
+        "PURI": 0
+      }
+    },
+    {
+      "train_id": "T002",
+      "train_number": "12801",
+      "name": "Purushottam Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_B",
+      "scheduled_departure": "06:20",
+      "avg_speed_kmh": 70,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BBS": 3,
+        "KUR": 5,
+        "KLK": 3,
+        "BAM": 0
+      }
+    },
+    {
+      "train_id": "T003",
+      "train_number": "22812",
+      "name": "New Delhi Rajdhani Express",
+      "priority": 1,
+      "initial_node": "BAM",
+      "route_id": "route_D",
+      "scheduled_departure": "05:30",
+      "avg_speed_kmh": 90,
+      "dwell_time_minutes": {
+        "BAM": 0,
+        "KLK": 2,
+        "KUR": 4,
+        "BBS": 5,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T004",
+      "train_number": "18406",
+      "name": "Santragachi-Puri Express",
+      "priority": 3,
+      "initial_node": "PURI",
+      "route_id": "route_C",
+      "scheduled_departure": "06:10",
+      "avg_speed_kmh": 65,
+      "dwell_time_minutes": {
+        "PURI": 0,
+        "KUR": 3,
+        "BBS": 4,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T005",
+      "train_number": "12993",
+      "name": "Puri-Gandhidham Express",
+      "priority": 3,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:35",
+      "avg_speed_kmh": 65,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BBS": 4,
+        "KUR": 3,
+        "PURI": 0
+      }
+    }
+  ],
+  "constraints": {
+    "min_headway_minutes": 5,
+    "max_hold_minutes": 15,
+    "junction_clearance_minutes": 3,
+    "single_line_clearance_minutes": 5,
+    "priority_override_allowed": true
+  },
+  "expected_conflicts": [
+    {
+      "type": "JUNCTION_CONFLICT",
+      "location": "KUR",
+      "trains": ["T001", "T003"],
+      "description": "Puri Express and Rajdhani converge at Khurda Road within 3 minutes"
+    },
+    {
+      "type": "CROSSING_CONFLICT",
+      "location": "KUR-PURI",
+      "trains": ["T001", "T004"],
+      "description": "T001 going to Puri, T004 coming from Puri on the same single-line section"
+    }
+  ]
+}
