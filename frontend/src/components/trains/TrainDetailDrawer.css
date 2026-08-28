@@ -1,0 +1,121 @@
+.drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-panel {
+  width: 400px;
+  background: var(--bg-surface);
+  height: 100%;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 250ms ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.drawer-title h3 { font-size: 16px; font-weight: 700; }
+.train-number-tag { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.btn-close:hover { color: var(--text-primary); }
+
+.drawer-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.block-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.info-cell {
+  background: var(--bg-app);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-label { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+.cell-value { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+.drawer-progress-bar {
+  height: 6px;
+  background: var(--bg-app);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.drawer-progress-fill {
+  height: 100%;
+  background: var(--brand-primary);
+}
+
+.progress-text { font-size: 12px; color: var(--text-secondary); }
+
+.ai-insights {
+  background: var(--status-ai-bg);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.ai-insight-text {
+  font-size: 12px;
+  color: var(--status-ai);
+  line-height: 1.4;
+}

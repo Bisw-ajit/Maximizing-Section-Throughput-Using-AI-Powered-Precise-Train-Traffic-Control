@@ -7,13 +7,18 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
     """
     SimPy generator process for a single train moving through its route.
 
+    Speed is NOT multiplied here — speed_multiplier is handled entirely by
+    the engine's _run() pacing (wall-clock sleep), so sim-time stays realistic.
+
     Each train:
       1. Waits until its scheduled departure (sim-time)
       2. For each section: requests the section resource (blocks if at capacity)
-      3. Travels through the section (timeout = travel_time / speed)
-      4. Emits events consumed by the Digital Twin
-      5. Dwells at each station node
+      3. Travels through the section in sim-time = (length_km / avg_speed_kmh) * 60 minutes
+      4. Updates digital twin with smooth interpolated section progress
+      5. Emits arrival/departure events and dwells at stations
     """
+    from ..services.twin.digital_twin import digital_twin
+
     train_id = train["train_id"]
     avg_speed = train.get("avg_speed_kmh", 70)
     dwell_times: dict[str, int] = train.get("dwell_time_minutes", {})
@@ -21,6 +26,14 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
     # Parse scheduled departure into sim minutes from midnight
     h, m = map(int, train["scheduled_departure"].split(":"))
     scheduled_dep_minutes = h * 60 + m
+
+    # Set initial state in digital twin
+    digital_twin.update_train_state(
+        train_id,
+        status="SCHEDULED",
+        current_node=train.get("initial_node"),
+        journey_progress=0.0,
+    )
 
     # Wait until departure time (env starts at 0 = midnight)
     if env.now < scheduled_dep_minutes:
@@ -31,6 +44,7 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
     running_delay = max(0.0, actual_dep - scheduled_dep_minutes)
 
     route_node_seq = _build_node_sequence(route_sections)
+    total_sections = len(route_sections)
 
     for i, section in enumerate(route_sections):
         section_id = section["section_id"]
@@ -40,13 +54,13 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
 
         resource = section_resources.get(section_id)
         if resource is None:
-            # Try reverse section ID
+            # Try reverse section ID for bidirectional sections
             rev_id = f"{to_node}-{from_node}"
             resource = section_resources.get(rev_id)
 
         wait_start = env.now
 
-        # Request section access (blocks if at capacity — this is where crossing conflicts happen)
+        # Request section access — blocks if at capacity (crossing conflicts happen here)
         if resource:
             req = resource.request()
             yield req
@@ -63,7 +77,7 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
                 "wait_minutes": round(wait_minutes, 2),
             })
 
-        # Enter section
+        # Enter section — update digital twin immediately
         engine.emit_event("SECTION_ENTER", train_id, {
             "section_id": section_id,
             "from_node": from_node,
@@ -71,10 +85,25 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
             "direction": _get_direction(from_node, to_node),
         })
 
-        # Travel time in sim-minutes
-        speed = avg_speed * engine.speed_multiplier if engine.speed_multiplier > 0 else avg_speed
-        travel_minutes = (length_km / speed) * 60
-        yield env.timeout(travel_minutes)
+        # Travel time in sim-minutes at real speed (no speed_multiplier — handled by engine pacing)
+        travel_minutes = (length_km / avg_speed) * 60
+
+        # Walk through the section in ~1-minute sim-steps for smooth map position updates
+        STEP_SIZE = 1.0  # sim-minutes per progress update
+        elapsed = 0.0
+        while elapsed < travel_minutes:
+            step = min(STEP_SIZE, travel_minutes - elapsed)
+            yield env.timeout(step)
+            elapsed += step
+            section_progress = min(1.0, elapsed / travel_minutes)
+            overall_progress = (i + section_progress) / total_sections
+            digital_twin.update_train_state(
+                train_id,
+                current_section=section_id,
+                current_node=None,
+                status="EN_ROUTE",
+                journey_progress=overall_progress,
+            )
 
         # Exit section
         engine.emit_event("SECTION_EXIT", train_id, {
@@ -100,13 +129,8 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
             "next_station": next_station,
         })
 
-        # Update journey progress
-        progress = (i + 1) / len(route_sections)
-        from ..services.twin.digital_twin import digital_twin
-        digital_twin.update_train_state(train_id, journey_progress=progress)
-
-        # Dwell at station (not at the very last stop)
-        if i < len(route_sections) - 1:
+        # Dwell at station (skip the very last stop)
+        if i < total_sections - 1:
             dwell = dwell_times.get(to_node, 2)
             if dwell > 0:
                 yield env.timeout(dwell)
@@ -127,9 +151,7 @@ def _build_node_sequence(sections: list[dict]) -> list[str]:
 
 
 def _get_direction(from_node: str, to_node: str) -> str:
-    # Simple heuristic based on network geography
-    southbound = {"CTK", "BBS", "KUR", "PURI", "KLK", "BAM"}
-    node_order = ["CTK", "BBS", "KUR", "PURI", "KLK", "BAM"]
+    node_order = ["CTK", "BGBR", "BBS", "RET", "KUR", "SIL", "PURI", "BALU", "KLK", "CAP", "BAM"]
     try:
         from_idx = node_order.index(from_node)
         to_idx = node_order.index(to_node)

@@ -1,6 +1,6 @@
 import simpy
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -23,6 +23,10 @@ class SimulationEngine:
     Trains move through network sections as SimPy processes competing for
     section resources (capacity-limited).
     """
+
+    # Real-time pacing: seconds of wall-clock time per 1 sim-minute at 1x speed.
+    # At 1x: 1 sim-min = 0.5s real. At 5x: 1 sim-min = 0.1s real.
+    REAL_SECONDS_PER_SIM_MIN_AT_1X: float = 0.5
 
     def __init__(self):
         self.env: Optional[simpy.Environment] = None
@@ -70,7 +74,7 @@ class SimulationEngine:
             raise RuntimeError("No scenario loaded. Call load_scenario() first.")
 
         self._stop_event.clear()
-        self._sim_start_real = datetime.utcnow()
+        self._sim_start_real = datetime.now(timezone.utc)
         self.status = SimulationStatus.RUNNING
 
         # Spawn one SimPy process per train
@@ -117,11 +121,12 @@ class SimulationEngine:
         self._waiting_time.clear()
         self.current_tick = 0.0
         self._run_id = None
-        from ..services.twin.digital_twin import digital_twin
-        digital_twin.reset()
+        # NOTE: Do NOT reset the digital_twin here.
+        # The scenario router owns the twin lifecycle; calling digital_twin.reset()
+        # here would wipe the twin that was just loaded before the engine is configured.
 
     def set_speed(self, multiplier: float) -> None:
-        self.speed_multiplier = max(0.5, min(multiplier, 10.0))
+        self.speed_multiplier = max(0.25, min(multiplier, 20.0))
 
     # ── Status ────────────────────────────────────────────────────────────────
 
@@ -164,7 +169,7 @@ class SimulationEngine:
             "type": event_type,
             "train_id": train_id,
             "tick": self.current_tick,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             **data,
         }
         self.events.append(event)
@@ -202,7 +207,15 @@ class SimulationEngine:
     # ── Internal run loop ─────────────────────────────────────────────────────
 
     def _run(self) -> None:
-        """Step the SimPy environment until all trains complete or stop is signalled."""
+        """Step the SimPy environment with real-time pacing.
+
+        Pacing formula:
+          wall_sleep = (delta_sim_minutes * REAL_SECONDS_PER_SIM_MIN_AT_1X) / speed_multiplier
+
+        At 1x speed: 1 sim-min ≈ 0.5s real → 600 sim-min ≈ 5 minutes real.
+        At 5x speed: 1 sim-min ≈ 0.1s real → 600 sim-min ≈ 1 minute real.
+        """
+        import time
         total_trains = len(self.scenario["trains"]) if self.scenario else 0
 
         while not self._stop_event.is_set():
@@ -211,13 +224,21 @@ class SimulationEngine:
                 break
 
             if self.env.peek() == float("inf"):
-                # Nothing left to process
                 self.status = SimulationStatus.COMPLETED
                 break
 
             try:
+                prev_tick = self.env.now
                 self.env.step()
                 self.current_tick = self.env.now
+                delta_sim_minutes = max(0.0, self.current_tick - prev_tick)
+
+                # Wall-clock pacing so the frontend can see trains move in real-time
+                if delta_sim_minutes > 0:
+                    pace = self.REAL_SECONDS_PER_SIM_MIN_AT_1X / max(0.25, self.speed_multiplier)
+                    sleep_duration = delta_sim_minutes * pace
+                    # Cap max sleep per step to keep UI responsive
+                    time.sleep(min(sleep_duration, 2.0))
             except Exception:
                 break
 

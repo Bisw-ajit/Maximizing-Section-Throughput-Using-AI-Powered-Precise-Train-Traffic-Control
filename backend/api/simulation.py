@@ -12,10 +12,18 @@ class SpeedBody(BaseModel):
 @router.post("/start")
 def start_simulation():
     try:
+        if not simulation_engine.scenario:
+            from ..services.twin.scenario_loader import scenario_loader
+            from ..services.twin.digital_twin import digital_twin
+            from ..services.twin.network_graph import rail_network
+            scenario = scenario_loader.load("scenario_001", rail_network)
+            timetable = scenario_loader.compute_timetable(scenario, rail_network)
+            digital_twin.load_scenario(scenario, timetable)
+            simulation_engine.load_scenario(scenario, rail_network, timetable)
         simulation_engine.start()
         return {"success": True, "data": {"message": "Simulation started.",
                 "status": simulation_engine.status.value}, "error": None}
-    except RuntimeError as e:
+    except Exception as e:
         return {"success": False, "data": None,
                 "error": {"code": "START_FAILED", "message": str(e)}}
 

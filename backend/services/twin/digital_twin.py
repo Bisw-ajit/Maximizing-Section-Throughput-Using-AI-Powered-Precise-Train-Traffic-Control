@@ -1,8 +1,12 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Lock
 from enum import Enum
 from typing import Optional
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class DataSource(str, Enum):
@@ -30,7 +34,7 @@ class TrainState:
     direction: Optional[str] = None
     delay_minutes: float = 0.0
     next_station: Optional[str] = None
-    last_updated: datetime = field(default_factory=datetime.utcnow)
+    last_updated: datetime = field(default_factory=utc_now)
     data_source: DataSource = DataSource.SIMULATION
     is_live: bool = False
     staleness_seconds: float = 0.0
@@ -59,7 +63,7 @@ class DigitalTwin:
             self._timetable = timetable
             self._scenario_id = scenario["scenario_id"]
             self._scenario_data = scenario
-            self._last_sync = datetime.utcnow()
+            self._last_sync = utc_now()
 
             for train_data in scenario["trains"]:
                 tid = train_data["train_id"]
@@ -79,7 +83,7 @@ class DigitalTwin:
 
     def update_from_live(self, records: list[dict]) -> None:
         """Merge live provider records into twin state."""
-        now = datetime.utcnow()
+        now = utc_now()
         with self._lock:
             self._last_sync = now
             for rec in records:
@@ -92,7 +96,7 @@ class DigitalTwin:
                 train.delay_minutes = rec.get("delay_minutes", train.delay_minutes)
                 train.next_station = rec.get("next_station", train.next_station)
                 train.status = rec.get("status", train.status)
-                train.last_updated = datetime.utcnow()
+                train.last_updated = utc_now()
                 train.is_live = rec.get("is_live", False)
                 train.staleness_seconds = rec.get("staleness_seconds", 0.0)
                 train.data_source = self._compute_source(train)
@@ -106,7 +110,7 @@ class DigitalTwin:
             for key, value in kwargs.items():
                 if hasattr(train, key):
                     setattr(train, key, value)
-            train.last_updated = datetime.utcnow()
+            train.last_updated = utc_now()
 
     # ── Section Occupancy ────────────────────────────────────────────────────
 
@@ -165,7 +169,7 @@ class DigitalTwin:
     def _compute_source(self, train: TrainState) -> DataSource:
         if not train.is_live:
             return DataSource.SIMULATION
-        age = (datetime.utcnow() - train.last_updated).total_seconds()
+        age = (utc_now() - train.last_updated).total_seconds()
         if age <= STALENESS_LIVE_THRESHOLD:
             return DataSource.LIVE
         if age <= STALENESS_RECENT_THRESHOLD:

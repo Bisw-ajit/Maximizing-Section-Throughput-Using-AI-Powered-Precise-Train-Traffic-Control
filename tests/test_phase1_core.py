@@ -15,9 +15,9 @@ class TestPhase1Core(unittest.TestCase):
     def test_network_graph_loaded(self):
         self.assertTrue(rail_network.is_loaded())
         nodes = rail_network.get_all_nodes()
-        self.assertEqual(len(nodes), 6)
+        self.assertEqual(len(nodes), 11)
         sections = rail_network.get_all_sections()
-        self.assertEqual(len(sections), 5)
+        self.assertEqual(len(sections), 10)
         routes = rail_network.get_all_routes()
         self.assertEqual(len(routes), 5)
 

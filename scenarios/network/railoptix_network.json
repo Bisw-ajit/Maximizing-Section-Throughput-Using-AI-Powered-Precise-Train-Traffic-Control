@@ -1,7 +1,7 @@
 {
   "network_id": "railoptix_main",
   "name": "RAILOPTIX Main Network",
-  "description": "Cuttack–Bhubaneswar–Khurda Road–Puri and Khurda Road–Khallikote–Brahmapur railway network in Odisha, India.",
+  "description": "Cuttack–Bhubaneswar–Khurda Road–Puri and Khurda Road–Khallikote–Brahmapur railway network with intermediate stations.",
   "nodes": [
     {
       "node_id": "CTK",
@@ -10,6 +10,15 @@
       "latitude": 20.4625,
       "longitude": 85.8828,
       "platform_count": 4,
+      "is_junction": false
+    },
+    {
+      "node_id": "BGBR",
+      "name": "Barang",
+      "node_type": "INTERMEDIATE",
+      "latitude": 20.3840,
+      "longitude": 85.8450,
+      "platform_count": 2,
       "is_junction": false
     },
     {
@@ -22,6 +31,15 @@
       "is_junction": false
     },
     {
+      "node_id": "RET",
+      "name": "Retang",
+      "node_type": "INTERMEDIATE",
+      "latitude": 20.2150,
+      "longitude": 85.7420,
+      "platform_count": 2,
+      "is_junction": false
+    },
+    {
       "node_id": "KUR",
       "name": "Khurda Road Junction",
       "node_type": "JUNCTION",
@@ -29,6 +47,15 @@
       "longitude": 85.6177,
       "platform_count": 4,
       "is_junction": true
+    },
+    {
+      "node_id": "SIL",
+      "name": "Sakhigopal",
+      "node_type": "INTERMEDIATE",
+      "latitude": 19.9520,
+      "longitude": 85.7950,
+      "platform_count": 2,
+      "is_junction": false
     },
     {
       "node_id": "PURI",
@@ -40,11 +67,29 @@
       "is_junction": false
     },
     {
+      "node_id": "BALU",
+      "name": "Balugaon",
+      "node_type": "INTERMEDIATE",
+      "latitude": 19.7420,
+      "longitude": 85.2050,
+      "platform_count": 2,
+      "is_junction": false
+    },
+    {
       "node_id": "KLK",
       "name": "Khallikote",
       "node_type": "STATION",
       "latitude": 19.6069,
       "longitude": 85.0939,
+      "platform_count": 2,
+      "is_junction": false
+    },
+    {
+      "node_id": "CAP",
+      "name": "Chatrapur",
+      "node_type": "INTERMEDIATE",
+      "latitude": 19.3580,
+      "longitude": 84.9850,
       "platform_count": 2,
       "is_junction": false
     },
@@ -60,50 +105,100 @@
   ],
   "sections": [
     {
-      "section_id": "CTK-BBS",
+      "section_id": "CTK-BGBR",
       "from_node": "CTK",
+      "to_node": "BGBR",
+      "length_km": 12.0,
+      "capacity": 2,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "DOUBLE"
+    },
+    {
+      "section_id": "BGBR-BBS",
+      "from_node": "BGBR",
       "to_node": "BBS",
-      "length_km": 28.0,
+      "length_km": 16.0,
       "capacity": 2,
       "allowed_movements": "BOTH",
       "is_bidirectional": true,
       "track_type": "DOUBLE"
     },
     {
-      "section_id": "BBS-KUR",
+      "section_id": "BBS-RET",
       "from_node": "BBS",
-      "to_node": "KUR",
-      "length_km": 20.0,
+      "to_node": "RET",
+      "length_km": 10.0,
       "capacity": 2,
       "allowed_movements": "BOTH",
       "is_bidirectional": true,
       "track_type": "DOUBLE"
     },
     {
-      "section_id": "KUR-PURI",
+      "section_id": "RET-KUR",
+      "from_node": "RET",
+      "to_node": "KUR",
+      "length_km": 10.0,
+      "capacity": 2,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "DOUBLE"
+    },
+    {
+      "section_id": "KUR-SIL",
       "from_node": "KUR",
+      "to_node": "SIL",
+      "length_km": 28.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    },
+    {
+      "section_id": "SIL-PURI",
+      "from_node": "SIL",
       "to_node": "PURI",
-      "length_km": 45.0,
+      "length_km": 17.0,
       "capacity": 1,
       "allowed_movements": "BOTH",
       "is_bidirectional": true,
       "track_type": "SINGLE"
     },
     {
-      "section_id": "KUR-KLK",
+      "section_id": "KUR-BALU",
       "from_node": "KUR",
-      "to_node": "KLK",
-      "length_km": 65.0,
+      "to_node": "BALU",
+      "length_km": 35.0,
       "capacity": 1,
       "allowed_movements": "BOTH",
       "is_bidirectional": true,
       "track_type": "SINGLE"
     },
     {
-      "section_id": "KLK-BAM",
+      "section_id": "BALU-KLK",
+      "from_node": "BALU",
+      "to_node": "KLK",
+      "length_km": 30.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    },
+    {
+      "section_id": "KLK-CAP",
       "from_node": "KLK",
+      "to_node": "CAP",
+      "length_km": 20.0,
+      "capacity": 1,
+      "allowed_movements": "BOTH",
+      "is_bidirectional": true,
+      "track_type": "SINGLE"
+    },
+    {
+      "section_id": "CAP-BAM",
+      "from_node": "CAP",
       "to_node": "BAM",
-      "length_km": 35.0,
+      "length_km": 15.0,
       "capacity": 1,
       "allowed_movements": "BOTH",
       "is_bidirectional": true,
@@ -115,31 +210,31 @@
       "route_id": "route_A",
       "name": "Cuttack → Puri (via Khurda Road)",
       "direction": "SOUTHBOUND",
-      "node_sequence": ["CTK", "BBS", "KUR", "PURI"]
+      "node_sequence": ["CTK", "BGBR", "BBS", "RET", "KUR", "SIL", "PURI"]
     },
     {
       "route_id": "route_B",
       "name": "Cuttack → Brahmapur (via Khurda Road)",
       "direction": "SOUTHBOUND",
-      "node_sequence": ["CTK", "BBS", "KUR", "KLK", "BAM"]
+      "node_sequence": ["CTK", "BGBR", "BBS", "RET", "KUR", "BALU", "KLK", "CAP", "BAM"]
     },
     {
       "route_id": "route_C",
       "name": "Puri → Cuttack (via Khurda Road)",
       "direction": "NORTHBOUND",
-      "node_sequence": ["PURI", "KUR", "BBS", "CTK"]
+      "node_sequence": ["PURI", "SIL", "KUR", "RET", "BBS", "BGBR", "CTK"]
     },
     {
       "route_id": "route_D",
       "name": "Brahmapur → Cuttack (via Khurda Road)",
       "direction": "NORTHBOUND",
-      "node_sequence": ["BAM", "KLK", "KUR", "BBS", "CTK"]
+      "node_sequence": ["BAM", "CAP", "KLK", "BALU", "KUR", "RET", "BBS", "BGBR", "CTK"]
     },
     {
       "route_id": "route_E",
       "name": "Khurda Road → Puri (local)",
       "direction": "SOUTHBOUND",
-      "node_sequence": ["KUR", "PURI"]
+      "node_sequence": ["KUR", "SIL", "PURI"]
     }
   ]
 }
