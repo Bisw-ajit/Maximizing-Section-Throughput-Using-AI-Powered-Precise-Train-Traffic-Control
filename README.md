@@ -108,13 +108,6 @@ The MVP models the high-density **Cuttack–Bhubaneswar–Khurda Road–Puri** &
 
 ---
 
-### 🗺️ 5. Suburban Transit Schematic Diagram Reference
-*Clean transit diagram reference styling integrated into the interactive vector map canvas.*
-
-![Suburban Transit Map Style](docs/images/mumbai_suburban_reference.png)
-
----
-
 ## 4. System Architecture & Digital Twin Methodology
 
 RAILOPTIX uses a decoupled, high-performance architecture built on Python (FastAPI/SimPy) and React (Vite/TypeScript):
