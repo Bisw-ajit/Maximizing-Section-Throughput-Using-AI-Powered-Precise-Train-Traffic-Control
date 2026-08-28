@@ -14,7 +14,7 @@
 ## 📑 Table of Contents
 - [1. Product Overview](#1-product-overview)
 - [2. Key Features & SaaS Highlights](#2-key-features--saas-highlights)
-- [3. System UI Snapshots & Central Control Room](#3-system-ui-snapshots--central-control-room)
+- [3. System UI Snapshots & Feature Showcase](#3-system-ui-snapshots--feature-showcase)
 - [4. System Architecture & Digital Twin Methodology](#4-system-architecture--digital-twin-methodology)
 - [5. Working Model & Simulation Engine Guide](#5-working-model--simulation-engine-guide)
   - [SimPy Discrete-Event Engine](#simpy-discrete-event-engine)
@@ -78,24 +78,38 @@ The MVP models the high-density **Cuttack–Bhubaneswar–Khurda Road–Puri** &
 
 ---
 
-## 3. System UI Snapshots & Central Control Room
+## 3. System UI Snapshots & Feature Showcase
 
-### 🔴 1. Central Control Room (CTC Dispatch Board View)
-*High-contrast interactive schematic display showing live train markers, section occupancies, and single-track warning aura.*
+### 🔴 1. Central Control Room — Live CTC Dispatch Board
+*Interactive schematic dispatch map displaying real-time simultaneous movement of active express and passenger trains, section occupancies, and twin live event stream.*
 
-![Central Control Room CTC Dispatch Board](docs/images/ctc_board.png)
-
----
-
-### 📊 2. Operations Dashboard & Real-Time KPI Analytics
-*Live KPI telemetry cards, conflict monitor, and real-time Digital Twin event stream.*
-
-![Operations Dashboard](docs/images/dashboard_overview.png)
+![Central Control Room CTC Dispatch Board](docs/images/ctc_board_live.png)
 
 ---
 
-### 🗺️ 3. Suburban Transit Schematic Reference
-*Clean, high-readability schematic transit map diagram styling used for CTC vector rendering.*
+### 🚊 2. Digital Twin — Active Train Telemetry
+*Real-time state tracking and telemetry cards for all scheduled and en-route trains across network corridors.*
+
+![Digital Twin Active Trains](docs/images/digital_twin_view.png)
+
+---
+
+### 📊 3. Performance Analytics & KPI Optimization
+*Visual analytics comparing baseline FCFS performance against AI-assisted throughput targets and delay propagation trends.*
+
+![Performance Analytics & KPI Optimization](docs/images/kpi_analytics_view.png)
+
+---
+
+### ⚙️ 4. Scenario Management & Benchmarking
+*Scenario loader interface for testing baseline vs conflict scenarios with automatic KPI target projections.*
+
+![Scenario Management](docs/images/scenario_management_view.png)
+
+---
+
+### 🗺️ 5. Suburban Transit Schematic Diagram Reference
+*Clean transit diagram reference styling integrated into the interactive vector map canvas.*
 
 ![Suburban Transit Map Style](docs/images/mumbai_suburban_reference.png)
 
