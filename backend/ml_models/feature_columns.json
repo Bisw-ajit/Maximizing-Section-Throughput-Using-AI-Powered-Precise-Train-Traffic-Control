@@ -1,0 +1,48 @@
+{
+  "delay_model": {
+    "features": [
+      "current_delay_min",
+      "section_length_km",
+      "section_capacity",
+      "section_occupancy",
+      "is_single_track",
+      "train_priority",
+      "speed_kmh",
+      "time_of_day_min",
+      "is_peak_hour",
+      "trains_ahead",
+      "journey_progress",
+      "sched_vs_actual_diff",
+      "congestion_ratio",
+      "speed_limit_kmh"
+    ],
+    "target": "next_delay_min",
+    "model_type": "XGBRegressor",
+    "metrics": {
+      "mae": 2.911,
+      "r2": 0.9479
+    }
+  },
+  "congestion_model": {
+    "features": [
+      "section_length_km",
+      "section_capacity",
+      "section_occupancy",
+      "is_single_track",
+      "trains_approaching",
+      "time_of_day_min",
+      "is_peak_hour",
+      "avg_delay_in_section",
+      "congestion_ratio",
+      "future_load",
+      "total_trains_network",
+      "speed_limit_kmh"
+    ],
+    "target": "congestion_risk",
+    "model_type": "XGBClassifier",
+    "metrics": {
+      "roc_auc": 0.9987
+    },
+    "threshold": 0.5
+  }
+}

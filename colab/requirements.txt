@@ -1,0 +1,11 @@
+# RAILOPTIX — Colab Training Environment Requirements
+# ─────────────────────────────────────────────────────────────────────────────
+# Used by: colab/generate_training_data.py and colab/train_xgboost.py
+# Install on Colab: !pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+xgboost>=2.0.0
+scikit-learn>=1.5.0
+numpy>=1.26.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.13.0
