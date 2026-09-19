@@ -1,0 +1,253 @@
+{
+  "scenario_id": "scenario_003",
+  "name": "Edge-Case Stress & Junction Saturation",
+  "description": "High-density stress test with 10 concurrent trains converging on Khurda Road and single-track corridors under extreme delay injection (up to +50m) and severe temporary speed restrictions (30 km/h TSR).",
+  "network_id": "railoptix_main",
+  "difficulty": "EXTREME",
+  "trains": [
+    {
+      "train_id": "T001",
+      "train_number": "12837",
+      "name": "Howrah-Puri Superfast Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:00",
+      "avg_speed_kmh": 75,
+      "initial_delay_minutes": 15.0,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BGBR": 1,
+        "BBS": 4,
+        "RET": 1,
+        "KUR": 4,
+        "SIL": 2,
+        "PURI": 0
+      }
+    },
+    {
+      "train_id": "T002",
+      "train_number": "12801",
+      "name": "Purushottam Express",
+      "priority": 2,
+      "initial_node": "CTK",
+      "route_id": "route_B",
+      "scheduled_departure": "06:05",
+      "avg_speed_kmh": 70,
+      "initial_delay_minutes": 25.0,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BGBR": 1,
+        "BBS": 4,
+        "RET": 1,
+        "KUR": 5,
+        "BALU": 2,
+        "KLK": 3,
+        "CAP": 2,
+        "BAM": 0
+      }
+    },
+    {
+      "train_id": "T003",
+      "train_number": "22812",
+      "name": "New Delhi Rajdhani Express",
+      "priority": 1,
+      "initial_node": "BAM",
+      "route_id": "route_D",
+      "scheduled_departure": "05:25",
+      "avg_speed_kmh": 90,
+      "initial_delay_minutes": 0.0,
+      "dwell_time_minutes": {
+        "BAM": 0,
+        "CAP": 1,
+        "KLK": 2,
+        "BALU": 2,
+        "KUR": 4,
+        "RET": 1,
+        "BBS": 5,
+        "BGBR": 1,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T004",
+      "train_number": "18406",
+      "name": "Santragachi-Puri Express",
+      "priority": 3,
+      "initial_node": "PURI",
+      "route_id": "route_C",
+      "scheduled_departure": "06:00",
+      "avg_speed_kmh": 65,
+      "initial_delay_minutes": 40.0,
+      "dwell_time_minutes": {
+        "PURI": 0,
+        "SIL": 2,
+        "KUR": 4,
+        "RET": 1,
+        "BBS": 4,
+        "BGBR": 1,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T005",
+      "train_number": "12993",
+      "name": "Gandhidham Express",
+      "priority": 3,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:15",
+      "avg_speed_kmh": 65,
+      "initial_delay_minutes": 30.0,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BGBR": 1,
+        "BBS": 4,
+        "RET": 1,
+        "KUR": 3,
+        "SIL": 2,
+        "PURI": 0
+      }
+    },
+    {
+      "train_id": "T006",
+      "train_number": "20836",
+      "name": "Vande Bharat Express",
+      "priority": 1,
+      "initial_node": "CTK",
+      "route_id": "route_A",
+      "scheduled_departure": "06:20",
+      "avg_speed_kmh": 95,
+      "initial_delay_minutes": 0.0,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BGBR": 1,
+        "BBS": 3,
+        "RET": 1,
+        "KUR": 3,
+        "SIL": 1,
+        "PURI": 0
+      }
+    },
+    {
+      "train_id": "T007",
+      "train_number": "BOXN-902",
+      "name": "Talcher Heavy Coal Freight",
+      "priority": 4,
+      "initial_node": "CTK",
+      "route_id": "route_B",
+      "scheduled_departure": "05:40",
+      "avg_speed_kmh": 45,
+      "initial_delay_minutes": 50.0,
+      "dwell_time_minutes": {
+        "CTK": 0,
+        "BGBR": 2,
+        "BBS": 5,
+        "RET": 2,
+        "KUR": 8,
+        "BALU": 4,
+        "KLK": 4,
+        "CAP": 3,
+        "BAM": 0
+      }
+    },
+    {
+      "train_id": "T008",
+      "train_number": "12822",
+      "name": "Dhauli Express",
+      "priority": 2,
+      "initial_node": "PURI",
+      "route_id": "route_C",
+      "scheduled_departure": "06:15",
+      "avg_speed_kmh": 75,
+      "initial_delay_minutes": 20.0,
+      "dwell_time_minutes": {
+        "PURI": 0,
+        "SIL": 2,
+        "KUR": 4,
+        "RET": 1,
+        "BBS": 4,
+        "BGBR": 1,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T009",
+      "train_number": "12704",
+      "name": "Falaknuma Express",
+      "priority": 2,
+      "initial_node": "BAM",
+      "route_id": "route_D",
+      "scheduled_departure": "05:50",
+      "avg_speed_kmh": 75,
+      "initial_delay_minutes": 35.0,
+      "dwell_time_minutes": {
+        "BAM": 0,
+        "CAP": 2,
+        "KLK": 3,
+        "BALU": 3,
+        "KUR": 5,
+        "RET": 1,
+        "BBS": 4,
+        "BGBR": 1,
+        "CTK": 0
+      }
+    },
+    {
+      "train_id": "T010",
+      "train_number": "58417",
+      "name": "Puri Local Shuttle",
+      "priority": 3,
+      "initial_node": "KUR",
+      "route_id": "route_E",
+      "scheduled_departure": "06:30",
+      "avg_speed_kmh": 55,
+      "initial_delay_minutes": 5.0,
+      "dwell_time_minutes": {
+        "KUR": 0,
+        "SIL": 3,
+        "PURI": 0
+      }
+    }
+  ],
+  "constraints": {
+    "min_headway_minutes": 4,
+    "max_hold_minutes": 20,
+    "junction_clearance_minutes": 3,
+    "single_line_clearance_minutes": 5,
+    "priority_override_allowed": true,
+    "siding_capacity_enforcement": true
+  },
+  "temporary_speed_restrictions": [
+    {
+      "section_id": "KUR-SIL",
+      "max_speed_kmh": 30,
+      "reason": "Caution Order: Single-line track renewal between Khurda Road and Sakhigopal"
+    },
+    {
+      "section_id": "RET-KUR",
+      "max_speed_kmh": 45,
+      "reason": "Caution Order: Route relay interlocking upgrade near Retang junction approaches"
+    }
+  ],
+  "expected_conflicts": [
+    {
+      "type": "JUNCTION_CONFLICT",
+      "location": "KUR",
+      "trains": ["T001", "T002", "T003", "T006"],
+      "description": "Multi-train convergence at Khurda Road Junction from CTK and BAM branches"
+    },
+    {
+      "type": "CROSSING_CONFLICT",
+      "location": "KUR-SIL",
+      "trains": ["T001", "T004", "T008"],
+      "description": "Opposing single-line saturation between Khurda Road and Puri"
+    },
+    {
+      "type": "HEADWAY_CONFLICT",
+      "location": "CTK-BBS",
+      "trains": ["T005", "T006"],
+      "description": "Vande Bharat Express trailing delayed Gandhidham Express on Cuttack-Bhubaneswar section"
+    }
+  ]
+}
