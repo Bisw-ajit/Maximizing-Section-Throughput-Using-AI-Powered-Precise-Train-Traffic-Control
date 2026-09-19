@@ -1,10 +1,10 @@
 import React from 'react';
 import { useAppStore } from '../../stores/useAppStore';
-import { Activity, ShieldAlert, Cpu, BarChart3, Radio, TrainFront } from 'lucide-react';
+import { Activity, ShieldAlert, Cpu, BarChart3, Radio, TrainFront, MonitorPlay } from 'lucide-react';
 import './Header.css';
 
 export const Header: React.FC = () => {
-  const { activeTab, setActiveTab } = useAppStore();
+  const { activeTab, setActiveTab, setIsDemoMode } = useAppStore();
 
   return (
     <header className="app-header">
@@ -60,11 +60,22 @@ export const Header: React.FC = () => {
         </button>
       </nav>
 
-      <div className="header-status">
-        <span className="status-indicator">
-          <span className="status-dot"></span>
-          <span className="status-text">Digital Twin Syncing</span>
-        </span>
+      <div className="header-actions">
+        <button
+          className="btn-header-demo"
+          onClick={() => setIsDemoMode(true)}
+          title="Launch Interactive Capstone Presentation Demo Walkthrough"
+        >
+          <MonitorPlay size={14} className="icon-demo" />
+          <span>Demo Walkthrough</span>
+        </button>
+
+        <div className="header-status">
+          <span className="status-indicator">
+            <span className="status-dot"></span>
+            <span className="status-text">Digital Twin Syncing</span>
+          </span>
+        </div>
       </div>
     </header>
   );

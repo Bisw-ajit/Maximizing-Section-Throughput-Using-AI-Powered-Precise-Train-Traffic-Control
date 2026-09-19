@@ -1,8 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import { useNetwork, useDigitalTwin } from '../../hooks/useRailData';
+import { useNetwork, useDigitalTwin, usePredictions, useConflicts } from '../../hooks/useRailData';
 import { useAppStore } from '../../stores/useAppStore';
-import { Train, Node, Section } from '../../types/api';
-import { AlertTriangle, Radio, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { Node, Section } from '../../types/api';
+import {
+  AlertTriangle,
+  Radio,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Flame,
+  ShieldAlert,
+  X,
+  Cpu,
+} from 'lucide-react';
 import './NetworkMap.css';
 
 // Built-in fallback network definitions so map renders 100% instantly
@@ -70,6 +80,16 @@ export const NetworkMap: React.FC = () => {
   const [mapMode, setMapMode] = useState<'ctc' | 'schematic' | 'geo'>('ctc');
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [hoveredSectionId, setHoveredSectionId] = useState<string | null>(null);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+
+  // RAIL-12: Predictive Heatmap & Conflict Overlays toggles
+  const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
+  const [showConflictOverlay, setShowConflictOverlay] = useState<boolean>(true);
+  const [predictionHorizon, setPredictionHorizon] = useState<number>(30);
+
+  // Queries
+  const { data: predictionsData } = usePredictions(predictionHorizon, showHeatmap);
+  const { data: conflictsData } = useConflicts();
 
   const activeNodes = useMemo(() => {
     return network?.nodes && network.nodes.length > 0 ? network.nodes : DEFAULT_FALLBACK_NODES;
@@ -92,27 +112,44 @@ export const NetworkMap: React.FC = () => {
     return coords;
   }, [activeNodes, mapMode]);
 
-  // Identify active conflict sections based on occupancy or held status
-  const conflictSections = useMemo(() => {
-    if (!twin || !twin.section_occupancy) return new Set<string>();
-    const conflicts = new Set<string>();
+  // Conflict maps
+  const { conflictSections, conflictNodes, conflictTrainIds } = useMemo(() => {
+    const secSet = new Set<string>();
+    const nodeSet = new Set<string>();
+    const trainSet = new Set<string>();
 
-    // Single-line bottleneck checks & multi-occupancy
-    Object.entries(twin.section_occupancy).forEach(([secId, trainIds]) => {
-      if (trainIds.length > 1) {
-        conflicts.add(secId);
-      }
-    });
+    if (conflictsData?.conflicts) {
+      conflictsData.conflicts.forEach((c) => {
+        if (c.location.includes('-')) {
+          secSet.add(c.location);
+          const [u, v] = c.location.split('-');
+          secSet.add(`${v}-${u}`);
+        } else {
+          nodeSet.add(c.location);
+        }
+        c.train_ids.forEach((tid) => trainSet.add(tid));
+      });
+    }
 
-    // Check held/delayed trains
-    twin.trains.forEach((train: Train) => {
-      if (train.status === 'HELD' && train.current_section) {
-        conflicts.add(train.current_section);
-      }
-    });
+    // Also include occupancy bottlenecks from digital twin
+    if (twin?.section_occupancy) {
+      Object.entries(twin.section_occupancy).forEach(([secId, trainIds]) => {
+        if (trainIds.length > 1) {
+          secSet.add(secId);
+        }
+      });
+    }
 
-    return conflicts;
-  }, [twin]);
+    return { conflictSections: secSet, conflictNodes: nodeSet, conflictTrainIds: trainSet };
+  }, [conflictsData, twin]);
+
+  // Congestion map lookup helper
+  const getSectionCongestion = (sectionId: string) => {
+    if (!predictionsData?.section_congestion) return null;
+    const parts = sectionId.split('-');
+    const revId = parts.length === 2 ? `${parts[1]}-${parts[0]}` : sectionId;
+    return predictionsData.section_congestion[sectionId] || predictionsData.section_congestion[revId] || null;
+  };
 
   // Compute animated real-time train positions
   const trainPositions = useMemo(() => {
@@ -135,7 +172,6 @@ export const NetworkMap: React.FC = () => {
         let fromId = parts[0];
         let toId = parts[1];
 
-        // Match section in activeSections
         const sec = activeSections.find(
           (s) =>
             s.section_id === train.current_section ||
@@ -159,7 +195,6 @@ export const NetworkMap: React.FC = () => {
           x = p1.x + dx * progress;
           y = p1.y + dy * progress;
 
-          // Apply slight perpendicular offset for overlapping trains
           const secKey = [fromId, toId].sort().join('-');
           sectionTrainCounts[secKey] = (sectionTrainCounts[secKey] || 0) + 1;
           const countIndex = sectionTrainCounts[secKey] - 1;
@@ -182,9 +217,24 @@ export const NetworkMap: React.FC = () => {
         sectionId,
         isDelayed: train.delay_minutes > 0,
         isHeld: train.status === 'HELD',
+        hasConflict: conflictTrainIds.has(train.train_id),
       };
     });
-  }, [twin, activeSections, nodeCoords]);
+  }, [twin, activeSections, nodeCoords, conflictTrainIds]);
+
+  // Selected section inspector details
+  const inspectedSection = useMemo(() => {
+    const targetId = selectedSectionId || hoveredSectionId;
+    if (!targetId) return null;
+    const sec = activeSections.find((s) => s.section_id === targetId);
+    if (!sec) return null;
+
+    const cong = getSectionCongestion(targetId);
+    const occupants = twin?.section_occupancy?.[targetId] || [];
+    const hasConflict = conflictSections.has(targetId);
+
+    return { sec, cong, occupants, hasConflict };
+  }, [selectedSectionId, hoveredSectionId, activeSections, twin, conflictSections, predictionsData]);
 
   return (
     <div className={`network-map-container mode-${mapMode}`}>
@@ -193,30 +243,62 @@ export const NetworkMap: React.FC = () => {
         <div className="cr-title">
           <Radio size={16} className="cr-live-pulse" />
           <span>RAILWAY CTC DISPATCH BOARD — CENTRAL CONTROL ROOM</span>
-          <span className="cr-subtext">Cuttack–Bhubaneswar–Khurda Road–Puri–Brahmapur Network</span>
+          <span className="cr-subtext">Cuttack–Bhubaneswar–Khurda Road–Puri–Brahmapur</span>
         </div>
 
         <div className="cr-controls">
+          {/* RAIL-12: Heatmap & Overlay Toggles */}
+          <div className="ml-overlay-toggles">
+            <button
+              className={`overlay-toggle-btn ${showHeatmap ? 'active-heatmap' : ''}`}
+              onClick={() => setShowHeatmap(!showHeatmap)}
+              title="Toggle XGBoost Predictive Congestion Heatmap"
+            >
+              <Flame size={13} />
+              <span>ML Heatmap</span>
+            </button>
+
+            <button
+              className={`overlay-toggle-btn ${showConflictOverlay ? 'active-conflict' : ''}`}
+              onClick={() => setShowConflictOverlay(!showConflictOverlay)}
+              title="Toggle Conflict Alert Overlays"
+            >
+              <ShieldAlert size={13} />
+              <span>Conflict Halos</span>
+            </button>
+
+            {showHeatmap && (
+              <div className="horizon-pill-group">
+                {[15, 30, 60].map((h) => (
+                  <button
+                    key={h}
+                    className={`horizon-btn ${predictionHorizon === h ? 'selected' : ''}`}
+                    onClick={() => setPredictionHorizon(h)}
+                  >
+                    {h}m
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Mode Switcher */}
           <div className="mode-toggle-group">
             <button
               className={`mode-btn ${mapMode === 'ctc' ? 'active' : ''}`}
               onClick={() => setMapMode('ctc')}
-              title="CTC Control Room Dark Mode"
             >
               CTC Dark
             </button>
             <button
               className={`mode-btn ${mapMode === 'schematic' ? 'active' : ''}`}
               onClick={() => setMapMode('schematic')}
-              title="Suburban Transit Schematic Diagram"
             >
               Transit Map
             </button>
             <button
               className={`mode-btn ${mapMode === 'geo' ? 'active' : ''}`}
               onClick={() => setMapMode('geo')}
-              title="Geographical Lat/Lng View"
             >
               Geographic
             </button>
@@ -245,9 +327,16 @@ export const NetworkMap: React.FC = () => {
           style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
         >
           <defs>
-            {/* Track Line Gradient / Shadows */}
-            <filter id="glow-danger" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+            <filter id="glow-danger" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <filter id="glow-critical" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <filter id="glow-warning" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
             <filter id="glow-track" x="-20%" y="-20%" width="140%" height="140%">
@@ -256,7 +345,7 @@ export const NetworkMap: React.FC = () => {
             </filter>
           </defs>
 
-          {/* Render Railway Sections (Tracks) */}
+          {/* ── Layer 1: Railway Track Sections ── */}
           <g className="rail-tracks-layer">
             {activeSections.map((sec) => {
               const p1 = nodeCoords[sec.from_node];
@@ -264,8 +353,15 @@ export const NetworkMap: React.FC = () => {
               if (!p1 || !p2) return null;
 
               const isSingle = (sec as any).track_type === 'SINGLE' || sec.capacity === 1;
-              const hasConflict = conflictSections.has(sec.section_id) || conflictSections.has(`${sec.to_node}-${sec.from_node}`);
-              const isHovered = hoveredSectionId === sec.section_id;
+              const hasConflict =
+                showConflictOverlay &&
+                (conflictSections.has(sec.section_id) ||
+                  conflictSections.has(`${sec.to_node}-${sec.from_node}`));
+              const isHovered = hoveredSectionId === sec.section_id || selectedSectionId === sec.section_id;
+
+              // Heatmap data lookup
+              const cong = showHeatmap ? getSectionCongestion(sec.section_id) : null;
+              const severity = cong ? cong.severity : 'CLEAR';
 
               const midX = (p1.x + p2.x) / 2;
               const midY = (p1.y + p2.y) / 2;
@@ -273,11 +369,34 @@ export const NetworkMap: React.FC = () => {
               return (
                 <g
                   key={sec.section_id}
-                  className={`track-section-group ${hasConflict ? 'conflict-track' : ''} ${isHovered ? 'hovered' : ''}`}
+                  className={`track-section-group ${hasConflict ? 'conflict-track' : ''} ${isHovered ? 'hovered' : ''} heatmap-${severity.toLowerCase()}`}
                   onMouseEnter={() => setHoveredSectionId(sec.section_id)}
                   onMouseLeave={() => setHoveredSectionId(null)}
+                  onClick={() => setSelectedSectionId(sec.section_id === selectedSectionId ? null : sec.section_id)}
                 >
-                  {/* Outer aura for conflict or hover */}
+                  {/* Heatmap Pulsing Aura (Critical / Warning) */}
+                  {showHeatmap && severity === 'CRITICAL' && (
+                    <line
+                      x1={p1.x}
+                      y1={p1.y}
+                      x2={p2.x}
+                      y2={p2.y}
+                      className="track-aura-critical"
+                      filter="url(#glow-critical)"
+                    />
+                  )}
+                  {showHeatmap && severity === 'WARNING' && (
+                    <line
+                      x1={p1.x}
+                      y1={p1.y}
+                      x2={p2.x}
+                      y2={p2.y}
+                      className="track-aura-warning"
+                      filter="url(#glow-warning)"
+                    />
+                  )}
+
+                  {/* Conflict Hazard Aura */}
                   {hasConflict && (
                     <line
                       x1={p1.x}
@@ -295,7 +414,7 @@ export const NetworkMap: React.FC = () => {
                     y1={p1.y}
                     x2={p2.x}
                     y2={p2.y}
-                    className={`track-line ${isSingle ? 'single-track' : 'double-track'} ${hasConflict ? 'conflict' : ''}`}
+                    className={`track-line ${isSingle ? 'single-track' : 'double-track'} ${hasConflict ? 'conflict' : ''} heatmap-stroke-${severity.toLowerCase()}`}
                   />
 
                   {/* Parallel track line for Double-track sections */}
@@ -305,22 +424,24 @@ export const NetworkMap: React.FC = () => {
                       y1={p1.y + 4}
                       x2={p2.x + 4}
                       y2={p2.y + 4}
-                      className="track-line-parallel"
+                      className={`track-line-parallel heatmap-stroke-${severity.toLowerCase()}`}
                     />
                   )}
 
-                  {/* Section Distance Badge */}
+                  {/* Distance & ML Risk Badge */}
                   <g className="distance-badge-group" transform={`translate(${midX}, ${midY})`}>
                     <rect
-                      x="-26"
+                      x={cong && cong.risk_probability >= 0.5 ? '-36' : '-26'}
                       y="-10"
-                      width="52"
+                      width={cong && cong.risk_probability >= 0.5 ? '72' : '52'}
                       height="20"
                       rx="10"
-                      className={`dist-bg ${isSingle ? 'single-badge' : ''}`}
+                      className={`dist-bg ${isSingle ? 'single-badge' : ''} ${showHeatmap ? `badge-risk-${severity.toLowerCase()}` : ''}`}
                     />
                     <text x="0" y="3" className="dist-text">
-                      {sec.length_km} km
+                      {showHeatmap && cong && cong.risk_probability >= 0.5
+                        ? `${(cong.risk_probability * 100).toFixed(0)}% RISK`
+                        : `${sec.length_km} km`}
                     </text>
                   </g>
                 </g>
@@ -328,7 +449,7 @@ export const NetworkMap: React.FC = () => {
             })}
           </g>
 
-          {/* Render Station & Junction Nodes */}
+          {/* ── Layer 2: Station & Junction Nodes ── */}
           <g className="station-nodes-layer">
             {activeNodes.map((node) => {
               const pos = nodeCoords[node.node_id];
@@ -338,17 +459,23 @@ export const NetworkMap: React.FC = () => {
               const platCount = node.platform_count ?? 2;
               const isTerminal = platCount >= 4 && !isJunction;
               const isIntermediate = node.node_type === 'INTERMEDIATE';
+              const hasNodeConflict = showConflictOverlay && conflictNodes.has(node.node_id);
 
               return (
                 <g
                   key={node.node_id}
-                  className={`station-node-group ${isJunction ? 'junction-node' : ''} ${isTerminal ? 'terminal-node' : ''}`}
+                  className={`station-node-group ${isJunction ? 'junction-node' : ''} ${isTerminal ? 'terminal-node' : ''} ${hasNodeConflict ? 'conflict-node-alert' : ''}`}
                   transform={`translate(${pos.x}, ${pos.y})`}
                 >
+                  {/* Conflict Alert Halo Ring on Node */}
+                  {hasNodeConflict && (
+                    <circle r="30" className="node-conflict-halo-ring" filter="url(#glow-danger)" />
+                  )}
+
                   {/* Outer pulse for Junction */}
                   {isJunction && <circle r="22" className="junction-pulse" />}
 
-                  {/* Node Icon/Circle */}
+                  {/* Node Symbol */}
                   {isJunction ? (
                     <g className="junction-symbol">
                       <rect x="-16" y="-16" width="32" height="32" rx="8" className="junction-box" />
@@ -360,7 +487,10 @@ export const NetworkMap: React.FC = () => {
                       <circle r="8" className="terminal-ring-inner" />
                     </g>
                   ) : (
-                    <circle r={isIntermediate ? 6 : 9} className={`station-disc ${isIntermediate ? 'intermediate' : ''}`} />
+                    <circle
+                      r={isIntermediate ? 6 : 9}
+                      className={`station-disc ${isIntermediate ? 'intermediate' : ''}`}
+                    />
                   )}
 
                   {/* Station Code & Name Label */}
@@ -372,8 +502,18 @@ export const NetworkMap: React.FC = () => {
                     {node.name} ({node.node_id})
                   </text>
 
-                  {/* Platform count pill for major stations */}
-                  {platCount > 2 && (
+                  {/* Node Conflict Warning Pill */}
+                  {hasNodeConflict && (
+                    <g transform="translate(0, -32)">
+                      <rect x="-38" y="-9" width="76" height="18" rx="9" className="node-alert-pill-bg" />
+                      <text x="0" y="3" className="node-alert-pill-text">
+                        ⚠️ CONFLICT
+                      </text>
+                    </g>
+                  )}
+
+                  {/* Platform count pill */}
+                  {!hasNodeConflict && platCount > 2 && (
                     <g transform={`translate(0, ${isJunction ? -26 : -20})`}>
                       <rect x="-24" y="-8" width="48" height="15" rx="7" className="plat-bg" />
                       <text x="0" y="3" className="plat-text">
@@ -386,33 +526,35 @@ export const NetworkMap: React.FC = () => {
             })}
           </g>
 
-          {/* Render Real-Time Animated Moving Trains */}
+          {/* ── Layer 3: Real-Time Animated Moving Trains ── */}
           <g className="train-markers-layer">
-            {trainPositions.map(({ train, x, y, angle, isDelayed, isHeld }) => {
+            {trainPositions.map(({ train, x, y, angle, isDelayed, isHeld, hasConflict }) => {
               const isSelected = selectedTrainId === train.train_id;
 
               return (
                 <g
                   key={train.train_id}
-                  className={`train-marker-group priority-${train.priority} ${isSelected ? 'selected' : ''} ${isHeld ? 'held' : ''}`}
+                  className={`train-marker-group priority-${train.priority} ${isSelected ? 'selected' : ''} ${isHeld ? 'held' : ''} ${hasConflict ? 'train-in-conflict' : ''}`}
                   transform={`translate(${x}, ${y})`}
                   onClick={() => setSelectedTrainId(train.train_id)}
                 >
-                  {/* Selection / High-priority aura glow */}
+                  {/* Conflict alert halo on train */}
+                  {hasConflict && (
+                    <circle r="26" className="train-conflict-halo" filter="url(#glow-danger)" />
+                  )}
+
                   <circle r="20" className="train-aura" filter="url(#glow-track)" />
 
-                  {/* Direction Arrow Indicator */}
                   <path
                     d="M 0 -12 L 6 2 L -6 2 Z"
                     className="direction-arrow"
                     transform={`rotate(${angle + (train.direction === 'NORTHBOUND' ? 180 : 0)})`}
                   />
 
-                  {/* Main Train Capsule Badge */}
                   <g className="train-badge-capsule">
                     <rect x="-50" y="-14" width="100" height="28" rx="14" className="train-capsule-bg" />
                     <text x="-40" y="-1" className="train-icon-symbol">
-                      {train.priority === 1 ? '🚨' : '🚆'}
+                      {hasConflict ? '⚠️' : train.priority === 1 ? '🚨' : '🚆'}
                     </text>
                     <text x="-24" y="-1" className="train-no-text">
                       #{train.train_number}
@@ -422,7 +564,6 @@ export const NetworkMap: React.FC = () => {
                     </text>
                   </g>
 
-                  {/* Delay / Status Indicator Badge */}
                   {isDelayed && (
                     <g transform="translate(36, -14)">
                       <rect x="-10" y="-6" width="34" height="14" rx="7" className="delay-badge-bg" />
@@ -438,28 +579,74 @@ export const NetworkMap: React.FC = () => {
         </svg>
       </div>
 
+      {/* ── Interactive Section Inspector Card (RAIL-12) ── */}
+      {inspectedSection && (
+        <div className="section-inspector-card animate-fade-in">
+          <div className="inspector-header">
+            <div className="inspector-title">
+              <Cpu size={14} className="icon-ai" />
+              <span>Section: {inspectedSection.sec.section_id}</span>
+              <span className={`inspector-tag ${inspectedSection.sec.capacity === 1 ? 'tag-single' : 'tag-double'}`}>
+                {inspectedSection.sec.capacity === 1 ? 'Single Line' : 'Double Track'}
+              </span>
+            </div>
+            <button className="btn-close-inspector" onClick={() => { setSelectedSectionId(null); setHoveredSectionId(null); }}>
+              <X size={14} />
+            </button>
+          </div>
+
+          <div className="inspector-body">
+            <div className="inspector-stat-row">
+              <span className="stat-label">Length & Capacity:</span>
+              <span className="stat-val">{inspectedSection.sec.length_km} km • Max Cap: {inspectedSection.sec.capacity}</span>
+            </div>
+
+            <div className="inspector-stat-row">
+              <span className="stat-label">Active Trains in Section:</span>
+              <span className="stat-val">{inspectedSection.occupants.length > 0 ? inspectedSection.occupants.join(', ') : 'None (Clear)'}</span>
+            </div>
+
+            {inspectedSection.cong && (
+              <div className="inspector-stat-row">
+                <span className="stat-label">XGBoost Congestion Risk:</span>
+                <span className={`stat-val-risk risk-${inspectedSection.cong.severity.toLowerCase()}`}>
+                  {(inspectedSection.cong.risk_probability * 100).toFixed(1)}% • {inspectedSection.cong.severity}
+                </span>
+              </div>
+            )}
+
+            {inspectedSection.hasConflict && (
+              <div className="inspector-alert-row">
+                <AlertTriangle size={13} />
+                <span>Active Conflict Alert on this section!</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Control Room Live Legend & Status Bar */}
       <div className="map-overlay-legend">
+        {showHeatmap && (
+          <div className="legend-heatmap-scale">
+            <span className="scale-title">ML Heatmap Risk:</span>
+            <span className="scale-step step-clear">Clear &lt;30%</span>
+            <span className="scale-step step-advisory">Advisory 30-50%</span>
+            <span className="scale-step step-warning">Warning 50-75%</span>
+            <span className="scale-step step-critical">Critical &ge;75%</span>
+          </div>
+        )}
         <div className="legend-item">
           <span className="legend-symbol junction"></span> Junction (Khurda Road)
         </div>
         <div className="legend-item">
-          <span className="legend-symbol terminal"></span> Major Station/Terminal
-        </div>
-        <div className="legend-item">
-          <span className="legend-symbol double-line"></span> Double Track
-        </div>
-        <div className="legend-item">
-          <span className="legend-symbol single-line"></span> Single Track (Passing Loop)
+          <span className="legend-symbol single-line"></span> Single Track Siding
         </div>
         <div className="legend-item">
           <span className="legend-symbol train-p1"></span> Priority 1 (Rajdhani)
         </div>
-        <div className="legend-item">
-          <span className="legend-symbol train-p2"></span> Priority 2/3 Express
-        </div>
         <div className="legend-item conflict-legend">
-          <AlertTriangle size={13} className="text-red-500" /> Active Conflict Warning
+          <AlertTriangle size={13} className="text-red-500" /> Active Conflict Overlay
         </div>
       </div>
     </div>

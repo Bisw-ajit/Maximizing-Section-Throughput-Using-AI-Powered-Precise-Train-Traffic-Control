@@ -103,8 +103,40 @@
   height: 8px;
   background-color: var(--status-on-time);
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+  box-shadow: 0 0 8px var(--status-on-time);
   animation: pulse 2s infinite;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-header-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(109, 40, 217, 0.3);
+  transition: all 0.15s ease;
+}
+
+.btn-header-demo:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(109, 40, 217, 0.4);
+}
+
+.icon-demo {
+  color: #facc15;
 }
 
 @keyframes pulse {

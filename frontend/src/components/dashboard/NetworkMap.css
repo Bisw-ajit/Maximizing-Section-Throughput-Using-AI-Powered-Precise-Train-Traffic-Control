@@ -459,3 +459,289 @@
   color: #f87171;
   font-weight: 700;
 }
+
+/* ─── RAIL-12: ML Heatmap & Conflict Overlays CSS ──────────────────────────── */
+
+/* Overlay toggles in control room header */
+.ml-overlay-toggles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.overlay-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.overlay-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.overlay-toggle-btn.active-heatmap {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.overlay-toggle-btn.active-conflict {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fcd34d;
+}
+
+.horizon-pill-group {
+  display: flex;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.horizon-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.horizon-btn.selected {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+/* Heatmap track colors */
+.heatmap-stroke-critical {
+  stroke: #ef4444 !important;
+  stroke-width: 5px !important;
+}
+
+.heatmap-stroke-warning {
+  stroke: #f97316 !important;
+  stroke-width: 4px !important;
+}
+
+.heatmap-stroke-advisory {
+  stroke: #eab308 !important;
+}
+
+.track-aura-critical {
+  stroke: #ef4444;
+  stroke-width: 14px;
+  opacity: 0.55;
+  animation: pulse-danger-track 1.2s infinite;
+}
+
+.track-aura-warning {
+  stroke: #f97316;
+  stroke-width: 10px;
+  opacity: 0.45;
+  animation: pulse-danger-track 2s infinite;
+}
+
+@keyframes pulse-danger-track {
+  0%, 100% { opacity: 0.65; stroke-width: 14px; }
+  50% { opacity: 0.25; stroke-width: 9px; }
+}
+
+/* Heatmap Risk Badges */
+.badge-risk-critical {
+  fill: #dc2626 !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.5px;
+}
+
+.badge-risk-warning {
+  fill: #ea580c !important;
+  stroke: #fdba74 !important;
+  stroke-width: 1px;
+}
+
+.badge-risk-advisory {
+  fill: #ca8a04 !important;
+}
+
+/* Node Conflict Alert Halos */
+.node-conflict-halo-ring {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 2.5px;
+  stroke-dasharray: 4 3;
+  animation: rotate-halo 4s linear infinite, pulse-node-alert 1.5s infinite;
+}
+
+@keyframes rotate-halo {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-node-alert {
+  0%, 100% { r: 28px; opacity: 0.8; }
+  50% { r: 35px; opacity: 0.3; }
+}
+
+.node-alert-pill-bg {
+  fill: #dc2626;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.node-alert-pill-text {
+  fill: #ffffff;
+  font-size: 8px;
+  font-weight: 900;
+  text-anchor: middle;
+  letter-spacing: 0.5px;
+}
+
+/* Train conflict halo */
+.train-conflict-halo {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 3px;
+  animation: pulse-node-alert 1.2s infinite;
+}
+
+/* Section Inspector Card (HUD Tooltip) */
+.section-inspector-card {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid #38bdf8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  width: 280px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-sans);
+}
+
+.inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+}
+
+.inspector-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.btn-close-inspector {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.btn-close-inspector:hover {
+  color: #ffffff;
+}
+
+.inspector-tag {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.tag-single { background: #92400e; color: #fef3c7; }
+.tag-double { background: #065f46; color: #d1fae5; }
+
+.inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.inspector-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label { color: #94a3b8; }
+.stat-val { color: #f1f5f9; font-weight: 600; }
+
+.stat-val-risk {
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.risk-critical { background: #dc2626; color: #ffffff; }
+.risk-warning { background: #ea580c; color: #ffffff; }
+.risk-advisory { background: #ca8a04; color: #ffffff; }
+.risk-clear { background: #16a34a; color: #ffffff; }
+
+.inspector-alert-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+/* Heatmap Legend scale */
+.legend-heatmap-scale {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+  border-right: 1px solid #334155;
+}
+
+.scale-title {
+  font-weight: 700;
+  color: #cbd5e1;
+  font-size: 10px;
+}
+
+.scale-step {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.step-clear { background: #16a34a; color: #ffffff; }
+.step-advisory { background: #ca8a04; color: #ffffff; }
+.step-warning { background: #ea580c; color: #ffffff; }
+.step-critical { background: #dc2626; color: #ffffff; }
+

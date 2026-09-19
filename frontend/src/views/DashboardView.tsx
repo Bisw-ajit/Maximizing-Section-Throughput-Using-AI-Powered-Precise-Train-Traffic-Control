@@ -2,12 +2,12 @@ import React from 'react';
 import { KpiBar } from '../components/dashboard/KpiBar';
 import { NetworkMap } from '../components/dashboard/NetworkMap';
 import { SimulationControls } from '../components/dashboard/SimulationControls';
-import { useDigitalTwin, useSimulationEvents } from '../hooks/useRailData';
-import { AlertCircle, Cpu, Layers } from 'lucide-react';
+import { RecommendationPanel } from '../components/dashboard/RecommendationPanel';
+import { useSimulationEvents } from '../hooks/useRailData';
+import { Layers } from 'lucide-react';
 import './DashboardView.css';
 
 export const DashboardView: React.FC = () => {
-  const { data: twin } = useDigitalTwin();
   const { data: eventsData } = useSimulationEvents(10);
 
   return (
@@ -21,33 +21,8 @@ export const DashboardView: React.FC = () => {
         </div>
 
         <div className="dashboard-sidebar">
-          {/* AI Conflict Detection Panel (Skeleton in Phase 3) */}
-          <div className="panel-card">
-            <div className="panel-header">
-              <span className="panel-title">
-                <AlertCircle size={16} className="icon-alert" /> Conflict Monitor
-              </span>
-              <span className="badge-ai">AI Layer Phase 2</span>
-            </div>
-            <div className="panel-body">
-              {twin?.trains.some((t: any) => t.delay_minutes > 0) ? (
-                <div className="conflict-card-preview">
-                  <div className="conflict-meta">
-                    <span className="severity-badge critical">CRITICAL</span>
-                    <span className="conflict-loc">KUR Junction</span>
-                  </div>
-                  <p className="conflict-desc">
-                    Crossing conflict detected on single-track section KUR-PURI between Puri Express (12837) & Rajdhani (22812).
-                  </p>
-                  <div className="ai-placeholder-note">
-                    <Cpu size={14} /> Full AI optimization wired in Phase 2
-                  </div>
-                </div>
-              ) : (
-                <div className="empty-panel">No conflicts predicted in active scenario.</div>
-              )}
-            </div>
-          </div>
+          {/* Interactive AI Decision & Recommendation Panel (RAIL-11) */}
+          <RecommendationPanel />
 
           {/* Real-time Digital Twin Events Feed */}
           <div className="panel-card flex-1">

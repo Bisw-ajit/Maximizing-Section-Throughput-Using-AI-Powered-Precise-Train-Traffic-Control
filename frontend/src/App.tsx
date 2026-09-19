@@ -6,6 +6,7 @@ import { LiveTwinView } from './views/LiveTwinView';
 import { ScenariosView } from './views/ScenariosView';
 import { AnalyticsView } from './views/AnalyticsView';
 import { TrainDetailDrawer } from './components/trains/TrainDetailDrawer';
+import { DemoController } from './components/demo/DemoController';
 import { useAppStore } from './stores/useAppStore';
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ export const AppContent: React.FC = () => {
         {activeTab === 'analytics' && <AnalyticsView />}
       </main>
       <TrainDetailDrawer />
+      <DemoController />
     </div>
   );
 };
