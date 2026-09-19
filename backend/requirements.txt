@@ -1,4 +1,4 @@
-# Phase 1 core — server-ready (ML packages added in Phase 2)
+# ── Core server ───────────────────────────────────────────────────────────────
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
 pydantic>=2.7.0
@@ -7,11 +7,15 @@ sqlalchemy>=2.0.0
 aiosqlite>=0.20.0
 greenlet>=3.0.0
 httpx>=0.27.0
-simpy>=4.1.1
-networkx>=3.3
 python-dotenv>=1.0.0
 
-# Added in Phase 2 (AI layer)
-# scikit-learn>=1.5.0
-# xgboost>=2.0.0
-# numpy>=1.26.0
+# ── Simulation & Graph ────────────────────────────────────────────────────────
+simpy>=4.1.1
+networkx>=3.3
+
+# ── ML / AI Layer (Phase 2) ───────────────────────────────────────────────────
+# These are OPTIONAL — system falls back to heuristics if not installed.
+# Install with: pip install xgboost scikit-learn numpy
+xgboost>=2.0.0
+scikit-learn>=1.5.0
+numpy>=1.26.0
