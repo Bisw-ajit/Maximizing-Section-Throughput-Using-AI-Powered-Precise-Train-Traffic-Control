@@ -1,3 +1,4 @@
+# ── Python ────────────────────────────────────────────────────────────────────
 railoptix.db
 .env
 __pycache__/
@@ -6,8 +7,19 @@ __pycache__/
 .venv/
 venv/
 env/
-node_modules/
-dist/
-.DS_Store
 *.egg-info/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+
+# ── ML model artifacts (large binaries — intentionally tracked for demo)
+# To exclude from git: uncomment the lines below and use git-lfs instead
+# backend/ml_models/*.json

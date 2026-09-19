@@ -1,7 +1,8 @@
 from sqlalchemy import String, Integer, Float, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime
+from datetime import datetime, timezone
 from ..core.database import Base
+
 
 
 class Train(Base):
@@ -18,7 +19,7 @@ class Train(Base):
     delay_minutes: Mapped[float] = mapped_column(Float, default=0.0)
     next_station: Mapped[str | None] = mapped_column(String, nullable=True)
     route_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    last_updated: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    last_updated: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     data_source: Mapped[str] = mapped_column(String, default="SCENARIO")
     is_live: Mapped[bool] = mapped_column(Boolean, default=False)
     staleness_seconds: Mapped[float] = mapped_column(Float, default=0.0)

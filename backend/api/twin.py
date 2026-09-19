@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..services.twin.digital_twin import digital_twin
 from ..providers.railradar.adapter import RailRadarAdapter, ScenarioFallbackAdapter
@@ -20,7 +20,7 @@ async def sync_twin():
         digital_twin.update_from_live(records)
         return {
             "success": True,
-            "data": {"synced": len(records), "synced_at": datetime.utcnow().isoformat()},
+            "data": {"synced": len(records), "synced_at": datetime.now(timezone.utc).isoformat()},
             "error": None,
         }
     except Exception as e:
