@@ -62,7 +62,11 @@ def train_process(env: simpy.Environment, train: dict, route_sections: list[dict
 
         # Request section access — blocks if at capacity (crossing conflicts happen here)
         if resource:
-            req = resource.request()
+            if isinstance(resource, simpy.PriorityResource):
+                prio_val = train.get("priority", 3)
+                req = resource.request(priority=prio_val)
+            else:
+                req = resource.request()
             yield req
         else:
             req = None

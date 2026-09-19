@@ -81,25 +81,81 @@ class DigitalTwin:
 
     # ── Live Data Updates ────────────────────────────────────────────────────
 
-    def update_from_live(self, records: list[dict]) -> None:
-        """Merge live provider records into twin state."""
+    def update_from_live(self, records: list[dict]) -> dict:
+        """
+        Merge live provider records into twin state.
+        Matches by train_id or train_number. If not found, registers new live train.
+        Updates section occupancy registry.
+        """
         now = utc_now()
+        updated_count = 0
+        added_count = 0
+
         with self._lock:
             self._last_sync = now
             for rec in records:
                 tid = rec.get("train_id")
-                if not tid or tid not in self._trains:
-                    continue
-                train = self._trains[tid]
-                train.current_node = rec.get("current_node", train.current_node)
-                train.current_section = rec.get("current_section", train.current_section)
-                train.delay_minutes = rec.get("delay_minutes", train.delay_minutes)
-                train.next_station = rec.get("next_station", train.next_station)
-                train.status = rec.get("status", train.status)
-                train.last_updated = utc_now()
-                train.is_live = rec.get("is_live", False)
-                train.staleness_seconds = rec.get("staleness_seconds", 0.0)
-                train.data_source = self._compute_source(train)
+                tnum = rec.get("train_number")
+
+                # Find existing train by ID or train_number
+                train = self._trains.get(tid)
+                if not train and tnum:
+                    for t in self._trains.values():
+                        if t.train_number == tnum:
+                            train = t
+                            tid = t.train_id
+                            break
+
+                # If still not found, create new live train state
+                if not train:
+                    if not tid:
+                        continue
+                    train = TrainState(
+                        train_id=tid,
+                        train_number=tnum or tid,
+                        name=rec.get("name", f"Live Train {tnum or tid}"),
+                        priority=rec.get("priority", 3),
+                        route_id=rec.get("route_id") or "route_A",
+                        current_node=rec.get("current_node"),
+                        current_section=rec.get("current_section"),
+                        direction=rec.get("direction"),
+                        status=rec.get("status", "RUNNING"),
+                        delay_minutes=float(rec.get("delay_minutes", 0.0)),
+                        next_station=rec.get("next_station"),
+                        last_updated=now,
+                        data_source=DataSource.LIVE,
+                        is_live=True,
+                        staleness_seconds=float(rec.get("staleness_seconds", 0.0)),
+                        journey_progress=float(rec.get("journey_progress", 0.0)),
+                    )
+                    self._trains[tid] = train
+                    added_count += 1
+                else:
+                    # Update existing train
+                    old_section = train.current_section
+                    new_section = rec.get("current_section", old_section)
+
+                    train.current_node = rec.get("current_node", train.current_node)
+                    train.current_section = new_section
+                    train.direction = rec.get("direction", train.direction)
+                    train.delay_minutes = float(rec.get("delay_minutes", train.delay_minutes))
+                    train.next_station = rec.get("next_station", train.next_station)
+                    train.status = rec.get("status", train.status)
+                    train.last_updated = now
+                    train.is_live = rec.get("is_live", True)
+                    train.staleness_seconds = float(rec.get("staleness_seconds", 0.0))
+                    train.journey_progress = float(rec.get("journey_progress", train.journey_progress))
+                    train.data_source = self._compute_source(train)
+                    updated_count += 1
+
+                # Keep track of section occupancy
+                sec = train.current_section
+                if sec:
+                    occupants = self._section_occupancy.setdefault(sec, [])
+                    if tid not in occupants:
+                        occupants.append(tid)
+
+        return {"updated": updated_count, "added": added_count, "total_live": len(records)}
 
     def update_train_state(self, train_id: str, **kwargs) -> None:
         """Update arbitrary fields on a train (thread-safe). Used by simulation engine."""
@@ -145,6 +201,14 @@ class DigitalTwin:
                 "section_occupancy": {k: list(v) for k, v in self._section_occupancy.items()},
                 "train_count": len(self._trains),
             }
+
+    def get_timetable(self) -> dict:
+        with self._lock:
+            return dict(self._timetable)
+
+    def get_scenario_data(self) -> Optional[dict]:
+        with self._lock:
+            return self._scenario_data
 
     def get_scheduled_time(self, train_id: str, node_id: str) -> Optional[datetime]:
         tt = self._timetable.get(train_id, {})

@@ -60,10 +60,25 @@ class SimulationEngine:
         self._waiting_time.clear()
         self.events.clear()
 
-        # Create a SimPy Resource per section (capacity from network)
-        for section_id, section in network.sections.items():
+        # Create a SimPy Resource per physical track section (PriorityResource for AI_ASSISTED)
+        raw_secs = getattr(network, "raw_sections", list(network.sections.values()))
+        is_priority = (strategy == SimulationStrategy.AI_ASSISTED)
+        for section in raw_secs:
             capacity = section.get("capacity", 1)
-            self.section_resources[section_id] = simpy.Resource(self.env, capacity=capacity)
+            if is_priority:
+                res = simpy.PriorityResource(self.env, capacity=capacity)
+            else:
+                res = simpy.Resource(self.env, capacity=capacity)
+            fwd_id = section["section_id"]
+            self.section_resources[fwd_id] = res
+            rev_id = f"{section['to_node']}-{section['from_node']}"
+            self.section_resources[rev_id] = res
+
+    def set_strategy(self, strategy: SimulationStrategy) -> None:
+        """Dynamically update strategy or reconfigure engine for next cycle."""
+        self.strategy = strategy
+        if self.scenario and self.network and self.timetable and self.status == SimulationStatus.IDLE:
+            self.load_scenario(self.scenario, self.network, self.timetable, strategy)
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -165,10 +180,11 @@ class SimulationEngine:
     # ── Events ────────────────────────────────────────────────────────────────
 
     def emit_event(self, event_type: str, train_id: str, data: dict) -> None:
+        tick = self.env.now if self.env is not None else self.current_tick
         event = {
             "type": event_type,
             "train_id": train_id,
-            "tick": self.current_tick,
+            "tick": tick,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             **data,
         }
