@@ -125,6 +125,23 @@ export const AnalyticsView: React.FC = () => {
     };
   });
 
+  const isLoading = isCompareLoading;
+  const isError = !isCompareLoading && !compareData && !baseline;
+
+  if (isLoading) {
+    return (
+      <div className="analytics-view" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
+        <div style={{ textAlign: 'center', color: '#64748b' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📊</div>
+          <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Loading analytics...</div>
+          <div style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+            Fetching baseline vs AI-Assisted comparison data
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="analytics-view">
       {/* ── View Header & Controls ── */}
@@ -181,6 +198,25 @@ export const AnalyticsView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* ── No Data / Error Banner ── */}
+      {isError && (
+        <div style={{
+          background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '10px',
+          padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem'
+        }}>
+          <span style={{ fontSize: '1.5rem' }}>📊</span>
+          <div>
+            <div style={{ fontWeight: 700, color: '#9a3412', fontSize: '0.95rem' }}>
+              No comparison data yet
+            </div>
+            <div style={{ color: '#c2410c', fontSize: '0.82rem', marginTop: '0.2rem' }}>
+              Click <strong>Re-run Comparison</strong> above to generate baseline vs AI-Assisted benchmark data.
+              Charts will populate automatically after the first run.
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Executive Summary Metrics Strip ── */}
       <div className="analytics-kpi-strip">
