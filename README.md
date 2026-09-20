@@ -11,6 +11,7 @@
 [![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passing-brightgreen.svg?style=flat-square)]()
 [![Status](https://img.shields.io/badge/Status-Capstone%20MVP-blue.svg?style=flat-square)]()
 [![Demo Video](https://img.shields.io/badge/YouTube-Live%20Demo-red.svg?style=flat-square&logo=youtube)](https://youtu.be/-Zk-hQDlA_U)
+[![HD Assets](https://img.shields.io/badge/Google%20Drive-HD%20Assets-4285F4.svg?style=flat-square&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/194VpS0ZjhHTmPbMRTo11LXaRqZPhdOhY/view?usp=sharing)
 
 ---
 
@@ -101,33 +102,48 @@ Watch the complete live walkthrough showcasing the SVG CTC dispatch board, SimPy
 
 > ▶️ **[Click here to watch the full project demonstration video on YouTube (https://youtu.be/-Zk-hQDlA_U)](https://youtu.be/-Zk-hQDlA_U)**
 
+> 📁 **[Download / View High-Resolution Uncompressed Project Assets (Google Drive)](https://drive.google.com/file/d/194VpS0ZjhHTmPbMRTo11LXaRqZPhdOhY/view?usp=sharing)**  
+> *Access original full-resolution 4K diagrams, architecture schemes, and uncompressed screenshots without browser scaling.*
+
 ---
 
 ### 🔴 1. Central Control Room — Live CTC Dispatch Board
 *Real-time multi-train animated movement, section occupancies, and twin live event stream.*
 
-![CTC Dispatch Board](docs/images/ctc_board_live.png)
+<a href="docs/images/ctc_board_live.png" target="_blank">
+  <img src="docs/images/ctc_board_live.png" alt="Central Control Room CTC Dispatch Board" width="100%" />
+</a>
+<p align="center"><em>(🔍 Click image to view in full resolution)</em></p>
 
 ---
 
-### 2. Digital Twin — Active Train Telemetry
+### 🚊 2. Digital Twin — Active Train Telemetry
 *Thread-safe state tracking and telemetry cards for all en-route trains.*
 
-![Digital Twin View](docs/images/digital_twin_view.png)
+<a href="docs/images/digital_twin_view.png" target="_blank">
+  <img src="docs/images/digital_twin_view.png" alt="Digital Twin Active Trains" width="100%" />
+</a>
+<p align="center"><em>(🔍 Click image to view in full resolution)</em></p>
 
 ---
 
-### 3. Performance Analytics & KPI Optimization
+### 📊 3. Performance Analytics & KPI Optimization
 *Baseline vs AI-Assisted comparison with delay reduction trends and section utilization.*
 
-![KPI Analytics View](docs/images/kpi_analytics_view.png)
+<a href="docs/images/kpi_analytics_view.png" target="_blank">
+  <img src="docs/images/kpi_analytics_view.png" alt="Performance Analytics" width="100%" />
+</a>
+<p align="center"><em>(🔍 Click image to view in full resolution)</em></p>
 
 ---
 
-### 4. Scenario Management & Benchmarking
+### ⚙️ 4. Scenario Management & Benchmarking
 *Scenario loader with conflict injection, difficulty levels, and automatic KPI targets.*
 
-![Scenario Management View](docs/images/scenario_management_view.png)
+<a href="docs/images/scenario_management_view.png" target="_blank">
+  <img src="docs/images/scenario_management_view.png" alt="Scenario Management" width="100%" />
+</a>
+<p align="center"><em>(🔍 Click image to view in full resolution)</em></p>
 
 ---
 
