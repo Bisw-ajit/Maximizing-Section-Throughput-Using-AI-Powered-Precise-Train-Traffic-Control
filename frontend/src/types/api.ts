@@ -357,11 +357,11 @@ export interface AnalyticsRunRecord {
   end_time: string;
   throughput: number;
   average_delay: number;
-  p1_delay: number;
+  p1_delay?: number;
   waiting_time: number;
   conflict_count: number;
   utilization: number;
-  train_results: TrainRunMetric[];
+  train_results?: TrainRunMetric[];
 }
 
 export interface AuditLogEntry {

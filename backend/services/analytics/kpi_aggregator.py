@@ -118,7 +118,9 @@ class KPIAggregatorService:
 
                 res = await session.execute(stmt)
                 runs = res.scalars().all()
+                cache_by_id = {c["run_id"]: c for c in self._runs_cache}
                 for r in runs:
+                    cached = cache_by_id.get(r.run_id, {})
                     db_records.append({
                         "run_id": r.run_id,
                         "scenario_id": r.scenario_id,
@@ -127,9 +129,11 @@ class KPIAggregatorService:
                         "end_time": r.end_time.isoformat() if r.end_time else None,
                         "throughput": r.throughput,
                         "average_delay": round(r.average_delay, 2),
+                        "p1_delay": cached.get("p1_delay", 0.0),
                         "waiting_time": round(r.waiting_time, 2),
                         "conflict_count": r.conflict_count,
                         "utilization": round(r.utilization, 3),
+                        "train_results": cached.get("train_results", []),
                     })
         except Exception:
             pass

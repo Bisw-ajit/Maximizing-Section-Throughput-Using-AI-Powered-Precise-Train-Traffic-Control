@@ -80,23 +80,23 @@ export const AnalyticsView: React.FC = () => {
   const macroComparisonData = [
     {
       metric: 'Avg Delay (min)',
-      Baseline: baseline ? Number(baseline.average_delay.toFixed(1)) : 0,
-      AIAssisted: aiAssisted ? Number(aiAssisted.average_delay.toFixed(1)) : 0,
+      Baseline: baseline?.average_delay != null ? Number(baseline.average_delay.toFixed(1)) : 0,
+      AIAssisted: aiAssisted?.average_delay != null ? Number(aiAssisted.average_delay.toFixed(1)) : 0,
     },
     {
       metric: 'P1 Delay (min)',
-      Baseline: baseline ? Number(baseline.p1_delay.toFixed(1)) : 0,
-      AIAssisted: aiAssisted ? Number(aiAssisted.p1_delay.toFixed(1)) : 0,
+      Baseline: baseline?.p1_delay != null ? Number(baseline.p1_delay.toFixed(1)) : 0,
+      AIAssisted: aiAssisted?.p1_delay != null ? Number(aiAssisted.p1_delay.toFixed(1)) : 0,
     },
     {
       metric: 'Wait Time (min)',
-      Baseline: baseline ? Number((baseline.waiting_time / (baseline.total_trains || 1)).toFixed(1)) : 0,
-      AIAssisted: aiAssisted ? Number((aiAssisted.waiting_time / (aiAssisted.total_trains || 1)).toFixed(1)) : 0,
+      Baseline: baseline?.waiting_time != null ? Number((baseline.waiting_time / (baseline.total_trains || 1)).toFixed(1)) : 0,
+      AIAssisted: aiAssisted?.waiting_time != null ? Number((aiAssisted.waiting_time / (aiAssisted.total_trains || 1)).toFixed(1)) : 0,
     },
     {
       metric: 'Throughput',
-      Baseline: baseline ? baseline.throughput : 0,
-      AIAssisted: aiAssisted ? aiAssisted.throughput : 0,
+      Baseline: baseline?.throughput ?? 0,
+      AIAssisted: aiAssisted?.throughput ?? 0,
     },
   ];
 
@@ -105,10 +105,10 @@ export const AnalyticsView: React.FC = () => {
     const aiTrain = (aiAssisted?.train_results || []).find((t) => t.train_id === baseTrain.train_id);
     return {
       train_id: baseTrain.train_id,
-      name: baseTrain.name.replace('Express', 'Exp').replace('Superfast', 'SF'),
-      priority: `P${baseTrain.priority}`,
-      BaselineDelay: Number(baseTrain.delay_minutes.toFixed(1)),
-      AIDelay: aiTrain ? Number(aiTrain.delay_minutes.toFixed(1)) : 0,
+      name: (baseTrain.name || baseTrain.train_id || '').replace('Express', 'Exp').replace('Superfast', 'SF'),
+      priority: `P${baseTrain.priority ?? 2}`,
+      BaselineDelay: baseTrain.delay_minutes != null ? Number(baseTrain.delay_minutes.toFixed(1)) : 0,
+      AIDelay: aiTrain?.delay_minutes != null ? Number(aiTrain.delay_minutes.toFixed(1)) : 0,
     };
   });
 
@@ -118,10 +118,10 @@ export const AnalyticsView: React.FC = () => {
     return {
       step: `T${idx + 1} (${baseTrain.train_id})`,
       timeOffset: idx * 15,
-      BaselineDelay: Number(baseTrain.delay_minutes.toFixed(1)),
-      AIDelay: aiTrain ? Number(aiTrain.delay_minutes.toFixed(1)) : 0,
-      BaselineWait: Number(baseTrain.wait_time_minutes.toFixed(1)),
-      AIWait: aiTrain ? Number(aiTrain.wait_time_minutes.toFixed(1)) : 0,
+      BaselineDelay: baseTrain.delay_minutes != null ? Number(baseTrain.delay_minutes.toFixed(1)) : 0,
+      AIDelay: aiTrain?.delay_minutes != null ? Number(aiTrain.delay_minutes.toFixed(1)) : 0,
+      BaselineWait: baseTrain.wait_time_minutes != null ? Number(baseTrain.wait_time_minutes.toFixed(1)) : 0,
+      AIWait: aiTrain?.wait_time_minutes != null ? Number(aiTrain.wait_time_minutes.toFixed(1)) : 0,
     };
   });
 
@@ -230,7 +230,7 @@ export const AnalyticsView: React.FC = () => {
             </div>
             <div className="kpi-title">Corridor Delay Saved</div>
             <div className="kpi-desc">
-              {baseline && aiAssisted
+              {baseline?.average_delay != null && aiAssisted?.average_delay != null
                 ? `${baseline.average_delay.toFixed(1)}m → ${aiAssisted.average_delay.toFixed(1)}m`
                 : 'Significant network delay absorption'}
             </div>
@@ -505,12 +505,12 @@ export const AnalyticsView: React.FC = () => {
                           {run.strategy}
                         </span>
                       </td>
-                      <td>{run.throughput} trains</td>
-                      <td>{run.average_delay.toFixed(1)}m</td>
-                      <td className={run.p1_delay === 0 ? 'text-green font-bold' : ''}>
-                        {run.p1_delay.toFixed(1)}m
+                      <td>{run.throughput ?? 0} trains</td>
+                      <td>{(run.average_delay ?? 0).toFixed(1)}m</td>
+                      <td className={(run.p1_delay ?? 0) === 0 ? 'text-green font-bold' : ''}>
+                        {(run.p1_delay ?? 0).toFixed(1)}m
                       </td>
-                      <td>{run.waiting_time.toFixed(1)}m</td>
+                      <td>{(run.waiting_time ?? 0).toFixed(1)}m</td>
                       <td>
                         <span className="status-completed">Completed</span>
                       </td>
