@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: railoptix
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: RAILRADAR_MOCK_FALLBACK
+        value: "true"

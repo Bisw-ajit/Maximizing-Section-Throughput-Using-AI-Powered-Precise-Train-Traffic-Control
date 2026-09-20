@@ -1,6 +1,6 @@
 import { APIResponse } from '../types/api';
 
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
