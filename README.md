@@ -79,15 +79,15 @@ The system combines four independent pillars to manage train conflicts, predict 
 
 ## 2. Key Features
 
-- 🖥️ **CTC Dispatch Board**: SVG-based schematic dispatch map with dark mode CTC aesthetics, real-time animated multi-train movement, section distance badges, and single-track occupancy highlights.
-- 🤖 **AI Conflict Resolution**: Automatic conflict detection across 4 conflict types (JUNCTION, CROSSING, SECTION, PLATFORM). Action candidates (HOLD, PRIORITIZE, CROSSING_WAIT, SPEED_ADVISORY) ranked via multi-objective scoring.
-- 🔮 **XAI Explanations**: Every AI recommendation includes a natural-language rationale explaining which scoring factors drove the decision.
-- 📈 **XGBoost Delay Prediction**: Trained model predicts per-train delay (minutes) and per-section congestion risk from 14/12 real-time features. Heuristic fallback if model files absent.
-- 📊 **Dual-Mode Analytics**: Headless baseline vs. AI-Assisted SimPy comparison with improvement metrics (delay reduction %, throughput gain).
-- 🗄️ **KPI Persistence**: Simulation run KPIs stored in SQLite via SQLAlchemy; trend analysis and CSV/HTML-PDF report export.
-- 🎛️ **Live Simulation Control**: Start, Pause, Resume, Reset, and speed multipliers (`1×`, `2×`, `5×`).
-- 🔄 **Siding Optimizer**: Station loop-line capacity analysis and deadlock prevention for junction saturation events.
-- 🎓 **Guided Demo**: 8-step interactive demo controller for presentations.
+- **CTC Dispatch Board**: SVG-based schematic dispatch map with dark mode CTC aesthetics, real-time animated multi-train movement, section distance badges, and single-track occupancy highlights.
+- **AI Conflict Resolution**: Automatic conflict detection across 4 conflict types (JUNCTION, CROSSING, SECTION, PLATFORM). Action candidates (HOLD, PRIORITIZE, CROSSING_WAIT, SPEED_ADVISORY) ranked via multi-objective scoring.
+- **XAI Explanations**: Every AI recommendation includes a natural-language rationale explaining which scoring factors drove the decision.
+- **XGBoost Delay Prediction**: Trained model predicts per-train delay (minutes) and per-section congestion risk from 14/12 real-time features. Heuristic fallback if model files absent.
+- **Dual-Mode Analytics**: Headless baseline vs. AI-Assisted SimPy comparison with improvement metrics (delay reduction %, throughput gain).
+- **KPI Persistence**: Simulation run KPIs stored in SQLite via SQLAlchemy; trend analysis and CSV/HTML-PDF report export.
+- **Live Simulation Control**: Start, Pause, Resume, Reset, and speed multipliers (`1×`, `2×`, `5×`).
+- **Siding Optimizer**: Station loop-line capacity analysis and deadlock prevention for junction saturation events.
+- **Guided Demo**: 8-step interactive demo controller for presentations.
 
 ---
 
@@ -100,21 +100,21 @@ The system combines four independent pillars to manage train conflicts, predict 
 
 ---
 
-### 🚊 2. Digital Twin — Active Train Telemetry
+### 2. Digital Twin — Active Train Telemetry
 *Thread-safe state tracking and telemetry cards for all en-route trains.*
 
 ![Digital Twin View](docs/images/digital_twin_view.png)
 
 ---
 
-### 📊 3. Performance Analytics & KPI Optimization
+### 3. Performance Analytics & KPI Optimization
 *Baseline vs AI-Assisted comparison with delay reduction trends and section utilization.*
 
 ![KPI Analytics View](docs/images/kpi_analytics_view.png)
 
 ---
 
-### ⚙️ 4. Scenario Management & Benchmarking
+### 4. Scenario Management & Benchmarking
 *Scenario loader with conflict injection, difficulty levels, and automatic KPI targets.*
 
 ![Scenario Management View](docs/images/scenario_management_view.png)
