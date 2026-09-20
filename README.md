@@ -16,6 +16,13 @@
 
 ---
 
+> 🌐 **Live Cloud Application**: **[https://railoptix-30y4.onrender.com](https://railoptix-30y4.onrender.com)**  
+> 📖 **Interactive Swagger API Docs**: **[https://railoptix-30y4.onrender.com/docs](https://railoptix-30y4.onrender.com/docs)**  
+> 🎥 **YouTube System Walkthrough**: **[https://youtu.be/-Zk-hQDlA_U](https://youtu.be/-Zk-hQDlA_U)**  
+> 📁 **High-Definition Project Assets**: **[Google Drive Folder](https://drive.google.com/file/d/194VpS0ZjhHTmPbMRTo11LXaRqZPhdOhY/view?usp=sharing)**
+
+---
+
 ## 📑 Table of Contents
 - [1. Product Overview](#1-product-overview)
 - [2. Key Features](#2-key-features)
@@ -257,9 +264,12 @@ KPIs persisted to `railoptix.db` (SQLite) via `kpi_aggregator.py` for trend anal
 
 ---
 
-## 5. Quick Start & Local Setup
+## 5. Quick Start & Cloud Access
 
-### Prerequisites
+> ⚡ **Immediate Cloud Access (Zero Setup):**  
+> You can test the live running system right in your browser at **[https://railoptix-30y4.onrender.com](https://railoptix-30y4.onrender.com)**.
+
+### Prerequisites (For Local Development)
 - **Python**: `3.10+` (3.12 recommended)
 - **Node.js**: `18.0+`
 - **Git**, `pip`, `npm`
@@ -346,7 +356,8 @@ T001      | Rajdhani Express 22812       | P1       | 6:00 | 110 km/h  | CTK →
 
 ## 7. REST API Documentation
 
-Full interactive docs: `http://127.0.0.1:8000/docs`
+* 🌐 **Live Cloud Interactive Swagger**: **[https://railoptix-30y4.onrender.com/docs](https://railoptix-30y4.onrender.com/docs)**
+* 💻 **Local Interactive Swagger**: `http://127.0.0.1:8000/docs` (when running locally)
 
 ### Network & Topology
 | Method | Endpoint | Description |
