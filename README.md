@@ -10,6 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passing-brightgreen.svg?style=flat-square)]()
 [![Status](https://img.shields.io/badge/Status-Capstone%20MVP-blue.svg?style=flat-square)]()
+[![Live App](https://img.shields.io/badge/Live%20Demo-railoptix--30y4.onrender.com-46E3B7.svg?style=flat-square&logo=render&logoColor=white)](https://railoptix-30y4.onrender.com)
 [![Demo Video](https://img.shields.io/badge/YouTube-Live%20Demo-red.svg?style=flat-square&logo=youtube)](https://youtu.be/-Zk-hQDlA_U)
 [![HD Assets](https://img.shields.io/badge/Google%20Drive-HD%20Assets-4285F4.svg?style=flat-square&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/194VpS0ZjhHTmPbMRTo11LXaRqZPhdOhY/view?usp=sharing)
 
