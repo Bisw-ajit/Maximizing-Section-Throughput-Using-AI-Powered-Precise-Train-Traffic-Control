@@ -10,13 +10,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passing-brightgreen.svg?style=flat-square)]()
 [![Status](https://img.shields.io/badge/Status-Capstone%20MVP-blue.svg?style=flat-square)]()
+[![Demo Video](https://img.shields.io/badge/YouTube-Live%20Demo-red.svg?style=flat-square&logo=youtube)](https://youtu.be/-Zk-hQDlA_U)
 
 ---
 
 ## 📑 Table of Contents
 - [1. Product Overview](#1-product-overview)
 - [2. Key Features](#2-key-features)
-- [3. System UI Snapshots](#3-system-ui-snapshots)
+- [3. System UI Snapshots & Live Video Demo](#3-system-ui-snapshots--live-video-demo)
 - [4. Full System Architecture](#4-full-system-architecture)
   - [AI Decision Pipeline](#ai-decision-pipeline)
   - [ML Prediction Engine](#ml-prediction-engine)
@@ -91,7 +92,16 @@ The system combines four independent pillars to manage train conflicts, predict 
 
 ---
 
-## 3. System UI Snapshots
+## 3. System UI Snapshots & Live Video Demo
+
+### 🎥 End-to-End System Video Demonstration
+Watch the complete live walkthrough showcasing the SVG CTC dispatch board, SimPy discrete-event train movement, AI conflict resolution, and KPI analytics:
+
+[![RAILOPTIX YouTube Video Demonstration](https://img.youtube.com/vi/-Zk-hQDlA_U/maxresdefault.jpg)](https://youtu.be/-Zk-hQDlA_U)
+
+> ▶️ **[Click here to watch the full project demonstration video on YouTube (https://youtu.be/-Zk-hQDlA_U)](https://youtu.be/-Zk-hQDlA_U)**
+
+---
 
 ### 🔴 1. Central Control Room — Live CTC Dispatch Board
 *Real-time multi-train animated movement, section occupancies, and twin live event stream.*
